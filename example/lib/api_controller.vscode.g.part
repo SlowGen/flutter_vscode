@@ -1,0 +1,34 @@
+// **************************************************************************
+// VSCodeGenerator
+// **************************************************************************
+
+part of 'api_controller.dart';
+
+class _$ApiController implements ApiController {
+  @override
+  Future<void> showInformationMessage(String message) {
+    return VSCodeControllerBase.sendCommand(
+      'showInformationMessage',
+      [message],
+      expectsResponse: false,
+    );
+  }
+
+  @override
+  Future<String> showInputBox(String prompt) {
+    return VSCodeControllerBase.sendCommand<String>(
+      'showInputBox',
+      [prompt],
+      expectsResponse: true,
+    );
+  }
+
+  @override
+  Future<void> showErrorMessage(String message) {
+    return VSCodeControllerBase.sendCommand(
+      'showErrorMessage',
+      [message],
+      expectsResponse: false,
+    );
+  }
+}
