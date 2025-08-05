@@ -1,0 +1,26 @@
+<html>
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="An example Flutter project.">
+
+  <script>
+    // Disable history API for webview compatibility
+    window.history.replaceState = function() {
+      console.log('History replaceState blocked for webview compatibility');
+    };
+    window.history.pushState = function() {
+      console.log('History pushState blocked for webview compatibility');
+    };
+  </script>
+
+  <title>flutter_vscode_example</title>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <script src="main.dart.js" async></script>
+</body>
+</html>
+
