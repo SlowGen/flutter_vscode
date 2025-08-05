@@ -41,7 +41,7 @@ dev_dependencies:
 Create a new VSCode extension project structure:
 
 ```bash
-dart run flutter_vscode:generate_vscode_extension
+dart run flutter_vscode/bin/generate_vscode_extension.dart
 ```
 
 This creates:
@@ -57,33 +57,100 @@ Create a controller class with annotations:
 ```dart
 import 'package:flutter_vscode/flutter_vscode.dart';
 
+// IMPORTANT: Add this part directive for code generation
+part 'my_extension_controller.g.dart';
+
 @VSCodeController()
 abstract class MyExtensionController {
-  @VSCodeCommand('myExtension.helloWorld')
+  @VSCodeCommand()
   void sayHello(String name);
   
-  @VSCodeCommand('myExtension.openPanel')
+  @VSCodeCommand()
   Future<String> openPanel();
+  
+  @VSCodeCommand()
+  void updateStatusBar(int count);
 }
 ```
 
 ### 3. Build Your Flutter UI
 
-Create your Flutter app as usual:
+Create your Flutter app that uses the generated controller:
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:flutter_vscode/flutter_vscode.dart';
+import 'my_extension_controller.dart'; // Import your controller
 
 void main() {
-  runApp(MyExtensionApp());
+  runApp(const MyExtensionApp());
 }
 
 class MyExtensionApp extends StatelessWidget {
+  const MyExtensionApp({super.key});
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: ExtensionPanel(),
+      title: 'VSCode Extension Demo',
+      home: const ExtensionPanel(),
+    );
+  }
+}
+
+class ExtensionPanel extends StatefulWidget {
+  const ExtensionPanel({super.key});
+  
+  @override
+  State<ExtensionPanel> createState() => _ExtensionPanelState();
+}
+
+class _ExtensionPanelState extends State<ExtensionPanel> {
+  late MyExtensionController _controller;
+  int _counter = 0;
+  
+  @override
+  void initState() {
+    super.initState();
+    // Use the generated factory method to create controller instance
+    _controller = MyExtensionControllerFactory.create();
+  }
+  
+  void _incrementCounter() {
+    setState(() {
+      _counter++;
+    });
+    
+    // Communicate with VSCode extension
+    try {
+      _controller.updateStatusBar(_counter);
+    } catch (e) {
+      debugPrint('Could not update VSCode status bar: $e');
+    }
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('VSCode Extension Demo'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('You have clicked the button this many times:'),
+            Text(
+              '$_counter',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _incrementCounter,
+              child: const Text('Increment & Update Status Bar'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -159,6 +226,15 @@ The generated `compile.sh` script handles:
 ### Contributing
 
 Contributions are welcome! Please see our [contributing guidelines](CONTRIBUTING.md) for details.
+
+### Troubleshooting
+
+If you encounter issues:
+- Ensure your `pubspec.yaml` has the correct dependencies
+- Run `flutter pub get` to get latest dependencies
+- Check for typos in your `part` declarations
+- Validate VSCode and Flutter logs for hints
+- Ensure Node.js is installed and npm dependencies are resolved
 
 ### Issues
 

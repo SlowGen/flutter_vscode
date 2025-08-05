@@ -29,13 +29,10 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
     // We will generate the implementation for the abstract class.
     final buffer = StringBuffer();
 
-    // Generate the part-of directive.
-    buffer.writeln('part of \'${_partOf(buildStep)}\';');
-    buffer.writeln();
-
     // Generate the implementation class.
     const implClassName = '_\$';
     buffer.writeln('class $implClassName$className implements $className {');
+    buffer.writeln();
 
     // Find all methods annotated with @VSCodeCommand.
     for (final method in classElement.methods) {
@@ -47,15 +44,16 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
     buffer.writeln('}');
     buffer.writeln();
 
+    // Generate a factory extension for easier instantiation
+    buffer.writeln('extension ${className}Factory on $className {');
+    buffer.writeln('  static $className create() => $implClassName$className();');
+    buffer.writeln('}');
+    buffer.writeln();
+
     // In a real implementation, we would also generate the TypeScript file here.
     // For now, we'll just focus on the Dart side.
 
     return buffer.toString();
-  }
-
-  /// Helper to get the file name for the 'part of' directive.
-  String _partOf(BuildStep buildStep) {
-    return buildStep.inputId.pathSegments.last;
   }
 
   String _generateMethodImplementation(MethodElement method) {
