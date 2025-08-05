@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 import 'package:path/path.dart' as p;
 
@@ -5,21 +7,37 @@ void main() {
   final currentDirectory = Directory.current.path;
   print('Generating VSCode extension files in: $currentDirectory');
 
-  // Create all necessary directories and files
-  _createDirectories(currentDirectory);
-  _createLaunchConfig(currentDirectory);
-  _createCompileScript(currentDirectory);
-  _createExtensionFile(currentDirectory);
-  _createPackageJson(currentDirectory);
-  _createTsConfig(currentDirectory);
-  _createWebFolder(currentDirectory);
-  _updateGitignore(currentDirectory);
+  try {
+    // Create all necessary directories and files
+    _createDirectories(currentDirectory);
+    _createLaunchConfig(currentDirectory);
+    _createCompileScript(currentDirectory);
+    _createExtensionFile(currentDirectory);
+    _createPackageJson(currentDirectory);
+    _createTsConfig(currentDirectory);
+    _createWebFolder(currentDirectory);
+    _updateGitignore(currentDirectory);
 
-  print('');
-  print('VSCode extension files generated successfully!');
-  print('Next steps:');
-  print('1. Run: npm install');
-  print('3. Press F5 in VS Code to run the extension');
+    print('');
+    print('✅ VSCode extension files generated successfully!');
+    print('Next steps:');
+    print('1. Run: npm install');
+    print('2. Press F5 in VS Code to run the extension');
+  } catch (e, stackTrace) {
+    print('');
+    print('❌ Error generating VSCode extension files:');
+    print('Error: $e');
+    print('');
+    print('Stack trace:');
+    print(stackTrace);
+    print('');
+    print('Common solutions:');
+    print('• Check you have write permissions in the current directory');
+    print('• Ensure you have sufficient disk space');
+    print('• Try running from a different directory');
+    print('• Close any files that might be open in editors');
+    exit(1);
+  }
 }
 
 void _createDirectories(String currentDirectory) {
@@ -37,7 +55,7 @@ void _createLaunchConfig(String currentDirectory) {
 void _createCompileScript(String currentDirectory) {
   final file = File(p.join(currentDirectory, 'scripts', 'compile.sh'));
   file.writeAsStringSync(_getCompileScript());
-  
+
   if (Platform.isLinux || Platform.isMacOS) {
     Process.runSync('chmod', ['+x', file.path]);
   }
@@ -45,9 +63,10 @@ void _createCompileScript(String currentDirectory) {
 
 void _createExtensionFile(String currentDirectory) {
   final file = File(p.join(currentDirectory, 'src', 'extension.ts'));
-  
+
   // Try to copy from template if it exists
-  final templatePath = p.join(Directory.current.path, 'tool', 'extension.ts.template');
+  final templatePath =
+      p.join(Directory.current.path, 'tool', 'extension.ts.template');
   if (File(templatePath).existsSync()) {
     final content = File(templatePath).readAsStringSync();
     file.writeAsStringSync(content);
@@ -69,33 +88,38 @@ void _createTsConfig(String currentDirectory) {
 void _createWebFolder(String currentDirectory) {
   // Create web directory structure
   Directory(p.join(currentDirectory, 'web')).createSync(recursive: true);
-  Directory(p.join(currentDirectory, 'web', 'icons')).createSync(recursive: true);
-  
+  Directory(p.join(currentDirectory, 'web', 'icons'))
+      .createSync(recursive: true);
+
   // Create or modify index.html for VSCode webview compatibility
   final indexFile = File(p.join(currentDirectory, 'web', 'index.html'));
   indexFile.writeAsStringSync(_getWebIndexHtml());
-  
+
   // Create flutter_bootstrap.js
-  final bootstrapFile = File(p.join(currentDirectory, 'web', 'flutter_bootstrap.js'));
+  final bootstrapFile =
+      File(p.join(currentDirectory, 'web', 'flutter_bootstrap.js'));
   bootstrapFile.writeAsStringSync(_getFlutterBootstrapJs());
-  
+
   // Create manifest.json
   final manifestFile = File(p.join(currentDirectory, 'web', 'manifest.json'));
   manifestFile.writeAsStringSync(_getManifestJson());
-  
+
   // Copy favicon if it exists from example, otherwise create a placeholder
-  final exampleFavicon = File(p.join(Directory.current.path, 'example', 'web', 'favicon.png'));
+  final exampleFavicon =
+      File(p.join(Directory.current.path, 'example', 'web', 'favicon.png'));
   final targetFavicon = File(p.join(currentDirectory, 'web', 'favicon.png'));
   if (exampleFavicon.existsSync()) {
     exampleFavicon.copySync(targetFavicon.path);
   }
-  
+
   // Copy icons from example if they exist
-  final iconsDir = Directory(p.join(Directory.current.path, 'example', 'web', 'icons'));
+  final iconsDir =
+      Directory(p.join(Directory.current.path, 'example', 'web', 'icons'));
   if (iconsDir.existsSync()) {
     for (final file in iconsDir.listSync()) {
       if (file is File) {
-        final targetPath = p.join(currentDirectory, 'web', 'icons', p.basename(file.path));
+        final targetPath =
+            p.join(currentDirectory, 'web', 'icons', p.basename(file.path));
         file.copySync(targetPath);
       }
     }
@@ -127,16 +151,18 @@ void _updateGitignore(String currentDirectory) {
   if (file.existsSync()) {
     final existing = file.readAsStringSync();
     final newEntries = <String>[];
-    
+
     for (final entry in entries) {
       if (entry.isEmpty || entry.startsWith('#')) continue;
       if (!existing.contains(entry)) {
         newEntries.add(entry);
       }
     }
-    
+
     if (newEntries.isNotEmpty) {
-      file.writeAsStringSync('\n# VSCode extension entries\n${newEntries.join('\n')}\n', mode: FileMode.append);
+      file.writeAsStringSync(
+          '\n# VSCode extension entries\n${newEntries.join('\n')}\n',
+          mode: FileMode.append);
     }
   } else {
     file.writeAsStringSync(entries.join('\n') + '\n');
@@ -149,7 +175,7 @@ String _getLaunchJson() {
   "configurations": [
     {
       "name": "Run Extension",
-      "type": "extensionHost", 
+      "type": "extensionHost",
       "request": "launch",
       "runtimeExecutable": "\${execPath}",
       "args": [
@@ -189,10 +215,10 @@ import * as fs from 'fs';
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('Flutter VSCode extension is now active!');
-    
+
     // Extension initialization code will be generated here by build_runner
     // based on your Flutter app configuration.
-    
+
     // TODO: Add your extension initialization logic here
 }
 
