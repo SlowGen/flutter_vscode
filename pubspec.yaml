@@ -12,6 +12,8 @@ dependencies:
     sdk: flutter
   # Add this for the annotations
   meta: ^1.9.1
+  # Path package for file manipulation in tools
+  path: ^1.8.3
   # Build dependencies needed for code generation
   build: ^2.4.1
   source_gen: ^1.4.0
@@ -25,4 +27,4 @@ dev_dependencies:
   build_runner: ^2.4.6
 
 executables:
-  init:
+  generate_vscode_extension: generate_vscode_extension
