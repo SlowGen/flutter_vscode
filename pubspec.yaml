@@ -4,7 +4,7 @@ version: 0.0.1
 homepage:
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.8.0 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
@@ -15,16 +15,17 @@ dependencies:
   # Path package for file manipulation in tools
   path: ^1.8.3
   # Build dependencies needed for code generation
-  build: ^2.4.1
-  source_gen: ^1.4.0
-  analyzer: ^6.2.0
+  build: ^3.0.0
+  source_gen: ^3.1.0
+  analyzer: ^7.7.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^6.0.0
   # Add these for the build_runner
   build_runner: ^2.4.6
+  very_good_analysis: ^9.0.0
 
 executables:
   generate_vscode_extension: generate_vscode_extension

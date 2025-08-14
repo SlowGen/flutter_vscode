@@ -4,7 +4,7 @@ version: 1.0.0+1
 publish_to: none
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.3.0 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
@@ -12,6 +12,8 @@ dependencies:
     sdk: flutter
   flutter_vscode:
     path: ../
+  web: ^1.0.0
+  path: ^1.8.0
 
 dev_dependencies:
   flutter_test:

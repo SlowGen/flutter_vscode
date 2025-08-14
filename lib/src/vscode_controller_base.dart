@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:math';
-import 'webview_bridge.dart';
+import 'package:flutter_vscode/src/webview_bridge.dart';
 
 /// Base class for generated VS Code controllers.
 /// 
@@ -31,7 +31,7 @@ abstract class VSCodeControllerBase {
       
       _bridge.postMessage(message);
       
-      return await completer.future;
+      return completer.future;
     } else {
       _bridge.postMessage(message);
       // For void methods, we need to return a completed future

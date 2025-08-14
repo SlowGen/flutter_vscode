@@ -36,12 +36,19 @@ dev_dependencies:
 
 ## Usage
 
-### 1. Generate Extension Scaffold
+### 1. Create Flutter Project and Generate Extension Scaffold
 
-Create a new VSCode extension project structure:
+First, create a web-only Flutter project:
 
 ```bash
-dart run flutter_vscode/bin/generate_vscode_extension.dart
+flutter create --platforms web your_extension_name
+cd your_extension_name
+```
+
+Then generate the VSCode extension project structure:
+
+```bash
+dart run flutter_vscode:generate_vscode_extension
 ```
 
 This creates:

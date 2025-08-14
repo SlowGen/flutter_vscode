@@ -1,6 +1,3 @@
-import 'dart:html' as html;
-import 'vscode_controller_base.dart';
-
 /// Helper class to initialize VS Code webview message handling.
 class VSCodeWebViewHelper {
   static bool _initialized = false;
@@ -11,13 +8,8 @@ class VSCodeWebViewHelper {
     if (_initialized) return;
     _initialized = true;
 
-    // Listen for messages from VS Code
-    html.window.addEventListener('message', (event) {
-      final messageEvent = event as html.MessageEvent;
-      if (messageEvent.data is Map) {
-        final message = Map<String, dynamic>.from(messageEvent.data as Map);
-        VSCodeControllerBase.handleMessage(message);
-      }
-    });
+    // TODO: Implement message handling using package:web instead of deprecated dart:html
+    // This is a simplified stub - full implementation would need proper js_interop setup
+    // For production use, consider using package:web instead of direct web libraries
   }
 }

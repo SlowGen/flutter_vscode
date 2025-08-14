@@ -32,3 +32,7 @@ class _$ApiController implements ApiController {
     );
   }
 }
+
+extension ApiControllerFactory on ApiController {
+  static ApiController create() => _$ApiController();
+}

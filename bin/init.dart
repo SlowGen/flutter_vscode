@@ -207,8 +207,8 @@ void main(List<String> arguments) async {
   indexFile.writeAsStringSync(webIndexTemplate);
   print('Created: web/index.html');
   
-  print('\\nFlutter VS Code extension scaffolding complete!');
-  print('\\nNext steps:');
+  print(r'\nFlutter VS Code extension scaffolding complete!');
+  print(r'\nNext steps:');
   print('1. Define your VS Code controllers using @VSCodeController and @VSCodeCommand annotations');
   print('2. Run "dart run build_runner build" to generate the Dart and TypeScript handlers');
   print('3. Copy the generated *.handlers.ts files from lib/ to src/ directory');

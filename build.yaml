@@ -5,6 +5,12 @@ targets:
         enabled: true
       flutter_vscode|vscode_ts:
         enabled: true
+      flutter_vscode|vscode_extension:
+        enabled: true
+      flutter_vscode|vscode_package_json:
+        enabled: true
+      flutter_vscode|vscode_interop:
+        enabled: true
 
 builders:
   vscode_dart:
@@ -17,6 +23,25 @@ builders:
   vscode_ts:
     import: "package:flutter_vscode/builder.dart"
     builder_factories: ["vscodeTsGenerator"]
-    build_extensions: {".dart": [".handlers.ts"]}
+    build_extensions: {"lib/{{}}.dart": ["src/{{}}.handlers.ts"]}
+    auto_apply: dependents
+    build_to: source
+    runs_before: ["source_gen|combining_builder"]
+  vscode_extension:
+    import: "package:flutter_vscode/builder.dart"
+    builder_factories: ["vscodeExtensionGenerator"]
+    build_extensions: {"lib/main.dart": ["src/extension.ts"]}
+    auto_apply: dependents
+    build_to: source
+  vscode_package_json:
+    import: "package:flutter_vscode/builder.dart"
+    builder_factories: ["vscodePackageJsonGenerator"]
+    build_extensions: {"lib/main.dart": ["package.json.updated"]}
+    auto_apply: dependents
+    build_to: source
+  vscode_interop:
+    import: "package:flutter_vscode/builder.dart"
+    builder_factories: ["vscodeInteropGenerator"]
+    build_extensions: {"lib/main.dart": ["lib/vscode_interop.dart"]}
     auto_apply: dependents
     build_to: source

@@ -16,6 +16,7 @@ void main() {
     _createPackageJson(currentDirectory);
     _createTsConfig(currentDirectory);
     _createWebFolder(currentDirectory);
+    _createMainDart(currentDirectory);
     _updateGitignore(currentDirectory);
 
     print('');
@@ -126,6 +127,13 @@ void _createWebFolder(String currentDirectory) {
   }
 }
 
+void _createMainDart(String currentDirectory) {
+  final file = File(p.join(currentDirectory, 'lib', 'main.dart'));
+  if (!file.existsSync()) {
+    file.writeAsStringSync(_getMainDart());
+  }
+}
+
 void _updateGitignore(String currentDirectory) {
   final file = File(p.join(currentDirectory, '.gitignore'));
   final entries = [
@@ -165,33 +173,39 @@ void _updateGitignore(String currentDirectory) {
           mode: FileMode.append);
     }
   } else {
-    file.writeAsStringSync(entries.join('\n') + '\n');
+    file.writeAsStringSync('${entries.join('\n')}\n');
   }
 }
 
 String _getLaunchJson() {
-  return '''{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Run Extension",
-      "type": "extensionHost",
-      "request": "launch",
-      "runtimeExecutable": "\${execPath}",
-      "args": [
-        "--extensionDevelopmentPath=\${workspaceRoot}",
-        "--disable-extensions"
-      ],
-      "outFiles": ["\${workspaceFolder}/build/web/*.js"],
-      "preLaunchTask": "npm: vscode:prepublish"
-    }
-  ]
+  return r'''
+// A launch configuration that compiles the extension and then opens it inside a new window
+// Use IntelliSense to learn about possible attributes.
+// Hover to view descriptions of existing attributes.
+// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Run Extension",
+			"type": "extensionHost",
+			"request": "launch",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceRoot}",
+				"--disable-extensions",
+				],
+			"outFiles": ["${workspaceFolder}/out/**/*.js"],
+			"preLaunchTask": "npm: vscode:prepublish"
+		}
+	]
 }
 ''';
 }
 
 String _getCompileScript() {
-  return '''#!/bin/bash
+  return '''
+#!/bin/bash
 
 # Generate Dart code using build_runner
 dart run build_runner build --delete-conflicting-outputs
@@ -205,7 +219,8 @@ flutter build web --no-web-resources-cdn --csp --pwa-strategy none --no-tree-sha
 }
 
 String _getExtensionTs() {
-  return '''import * as vscode from 'vscode';
+  return '''
+import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -229,7 +244,8 @@ export function deactivate() {
 }
 
 String _getPackageJson() {
-  return '''{
+  return '''
+{
   "name": "your_extension_name",
   "displayName": "Your Extension Display Name",
   "description": "Describe your extension",
@@ -268,7 +284,8 @@ String _getPackageJson() {
 }
 
 String _getTsConfig() {
-  return '''{
+  return '''
+{
   "compilerOptions": {
     "module": "commonjs",
     "target": "es2020",
@@ -287,37 +304,55 @@ String _getTsConfig() {
 }
 
 String _getWebIndexHtml() {
-  return '''\u003c!DOCTYPE html>
+  return '''
+\u003c!DOCTYPE html>
 \u003chtml>
 \u003chead>
-  \u003cbase href=\"\$FLUTTER_BASE_HREF\">
+  \u003cbase href="\$FLUTTER_BASE_HREF">
 
-  \u003cmeta charset=\"UTF-8\">
-  \u003cmeta content=\"IE=Edge\" http-equiv=\"X-UA-Compatible\">
-  \u003cmeta name=\"description\" content=\"A new Flutter project.\">
+  \u003cmeta charset="UTF-8">
+  \u003cmeta content="IE=Edge" http-equiv="X-UA-Compatible">
+  \u003cmeta name="description" content="A new Flutter project.">
 
   \u003cscript>
     // Disable history API for webview compatibility
-    window.history.replaceState = function() {
-      console.log('History replaceState blocked for webview compatibility');
-    };
-    window.history.pushState = function() {
-      console.log('History pushState blocked for webview compatibility');
-    };
+    (function() {
+      function initializeHistoryAPI() {
+        if (typeof window !== 'undefined' \u0026\u0026 window.history) {
+          window.history.replaceState = function() {
+            console.log('History replaceState blocked for webview compatibility');
+          };
+          window.history.pushState = function() {
+            console.log('History pushState blocked for webview compatibility');
+          };
+        } else {
+          // Retry after a short delay if window is not available yet
+          setTimeout(initializeHistoryAPI, 10);
+        }
+      }
+
+      // Initialize immediately or when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeHistoryAPI);
+      } else {
+        initializeHistoryAPI();
+      }
+    })();
   \u003c/script>
 
   \u003ctitle>Your Flutter VSCode Extension\u003c/title>
-  \u003clink rel=\"manifest\" href=\"manifest.json\">
+  \u003clink rel="manifest" href="manifest.json">
 \u003c/head>
 \u003cbody>
-  \u003cscript src=\"main.dart.js\" async>\u003c/script>
+  \u003cscript src="main.dart.js" defer>\u003c/script>
 \u003c/body>
 \u003c/html>
 ''';
 }
 
 String _getFlutterBootstrapJs() {
-  return '''{{flutter_js}}
+  return '''
+{{flutter_js}}
 {{flutter_build_config}}
 
 // the below loader ensures that the local copy of canvasKit is used
@@ -333,39 +368,168 @@ _flutter.loader.load({
 }
 
 String _getManifestJson() {
-  return '''{
-  \"name\": \"Flutter VSCode Extension\",
-  \"short_name\": \"Flutter VSCode\",
-  \"start_url\": \"./\",
-  \"display\": \"standalone\",
-  \"background_color\": \"#0175C2\",
-  \"theme_color\": \"#0175C2\",
-  \"description\": \"A Flutter app for VSCode extension\",
-  \"orientation\": \"portrait-primary\",
-  \"prefer_related_applications\": false,
-  \"icons\": [
+  return '''
+{
+  "name": "Flutter VSCode Extension",
+  "short_name": "Flutter VSCode",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0175C2",
+  "theme_color": "#0175C2",
+  "description": "A Flutter app for VSCode extension",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
+  "icons": [
     {
-      \"src\": \"icons/Icon-192.png\",
-      \"sizes\": \"192x192\",
-      \"type\": \"image/png\"
+      "src": "icons/Icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
     },
     {
-      \"src\": \"icons/Icon-512.png\",
-      \"sizes\": \"512x512\",
-      \"type\": \"image/png\"
+      "src": "icons/Icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
     },
     {
-      \"src\": \"icons/Icon-maskable-192.png\",
-      \"sizes\": \"192x192\",
-      \"type\": \"image/png\",
-      \"purpose\": \"maskable\"
+      "src": "icons/Icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
-      \"src\": \"icons/Icon-maskable-512.png\",
-      \"sizes\": \"512x512\",
-      \"type\": \"image/png\",
-      \"purpose\": \"maskable\"
+      "src": "icons/Icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }''';
+}
+
+String _getMainDart() {
+  return r'''
+import 'package:flutter/material.dart';
+import 'vscode_interop.dart';
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter VSCode Extension',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+      ),
+      home: const MyHomePage(title: 'Flutter VSCode Extension Demo'),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
+  WebviewMessageHandler? _messageHandler;
+
+  @override
+  void initState() {
+    super.initState();
+    try {
+      _messageHandler = WebviewMessageHandler();
+    } catch (e) {
+      print('Error initializing message handler: $e');
+    }
+
+    // Set up message handlers for VSCode communication
+    _messageHandler?.setMessageHandler((message) {
+      final messageType = message.type;
+
+      switch (messageType) {
+        case 'increment':
+          _incrementCounter();
+          break;
+        case 'reset':
+          _resetCounter();
+          break;
+      }
+    });
+
+    // Send initial counter value
+    _updateCounterInVsCode();
+  }
+
+  @override
+  void dispose() {
+    _messageHandler?.dispose();
+    super.dispose();
+  }
+
+  void _incrementCounter() {
+    setState(() {
+      _counter++;
+    });
+    _updateCounterInVsCode();
+  }
+
+  void _resetCounter() {
+    setState(() {
+      _counter = 0;
+    });
+    _updateCounterInVsCode();
+  }
+
+  void _updateCounterInVsCode() {
+    _messageHandler?.sendMessage(
+      Message(type: 'counterUpdate', value: _counter),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              'You have pushed the button this many times:',
+            ),
+            Text(
+              '$_counter',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'This counter is synced with VSCode!',
+              style: TextStyle(color: Colors.grey),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+''';
 }

@@ -15,4 +15,4 @@ abstract class ApiController {
 }
 
 // Factory function to create an instance
-ApiController createApiController() => _$ApiController();
+ApiController createApiController() => ApiControllerFactory.create();
