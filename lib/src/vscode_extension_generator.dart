@@ -3,6 +3,10 @@ import 'dart:io';
 
 import 'package:build/build.dart';
 
+/// Generates TypeScript extension files for VSCode.
+/// 
+/// This builder creates the main extension.ts file that bootstraps
+/// the VSCode extension and sets up the webview provider.
 class VSCodeExtensionGenerator implements Builder {
   @override
   Map<String, List<String>> get buildExtensions => {
@@ -15,14 +19,15 @@ class VSCodeExtensionGenerator implements Builder {
     if (inputId.path != 'lib/main.dart') return;
 
     try {
-      // We need to scan all files for controllers, but only generate once from main.dart
+      // We need to scan all files for controllers, but only generate once
+      // from main.dart
       final output = await _generateExtension(buildStep);
 
       if (output != null) {
         final outputId = AssetId(inputId.package, 'src/extension.ts');
         await buildStep.writeAsString(outputId, output);
       }
-    } catch (e) {
+    } on Exception catch (e) {
       print('Error generating extension: $e');
     }
   }
@@ -43,46 +48,49 @@ class VSCodeExtensionGenerator implements Builder {
           }
         }
       }
-    } catch (e) {
+    } on Exception {
       // Use default if can't read pubspec
     }
 
     // Generate a generic Flutter webview extension structure
-    final buffer = StringBuffer();
-
-    buffer.writeln("import * as vscode from 'vscode';");
-    buffer.writeln("import * as path from 'path';");
-    buffer.writeln("import * as fs from 'fs';");
-
-    buffer.writeln();
-    buffer.writeln(
-        'export function activate(context: vscode.ExtensionContext) {');
-    buffer.writeln("    console.log('Flutter VSCode extension activated');");
-    buffer.writeln();
-    buffer.writeln(
-        '    const provider = new FlutterWebviewProvider(context.extensionUri);');
-    buffer.writeln();
-    buffer.writeln('    // Register the webview provider');
-    buffer.writeln('    context.subscriptions.push(');
-    buffer.writeln(
-        '        vscode.window.registerWebviewViewProvider(FlutterWebviewProvider.viewType, provider)');
-    buffer.writeln('    );');
-    buffer.writeln();
-    buffer.writeln('    // TODO: Register your custom commands here');
-    buffer.writeln('    // Example:');
-    buffer.writeln(
-        "    // context.subscriptions.push(vscode.commands.registerCommand('yourextension.command', () => {");
-    buffer.writeln('    //     if (provider.view) {');
-    buffer.writeln(
-        "    //         provider.view.webview.postMessage({ type: 'your-message' });");
-    buffer.writeln('    //     }');
-    buffer.writeln('    // }));');
-    buffer.writeln('}');
-    buffer.writeln();
-    buffer.writeln('export function deactivate() {');
-    buffer
-        .writeln("    console.log('Flutter VSCode extension deactivated');");
-    buffer.writeln('}');
+    final buffer = StringBuffer()
+      ..writeln("import * as vscode from 'vscode';")
+      ..writeln("import * as path from 'path';")
+      ..writeln("import * as fs from 'fs';")
+      ..writeln()
+      ..writeln(
+        'export function activate(context: vscode.ExtensionContext) {',
+      )
+      ..writeln("    console.log('Flutter VSCode extension activated');")
+      ..writeln()
+      ..writeln(
+        '    const provider = new FlutterWebviewProvider(' 
+        'context.extensionUri);',
+      )
+      ..writeln()
+      ..writeln('    // Register the webview provider')
+      ..writeln('    context.subscriptions.push(')
+      ..writeln(
+        '        vscode.window.registerWebviewViewProvider(' 
+        'FlutterWebviewProvider.viewType, provider)',
+      )
+      ..writeln('    );')
+      ..writeln()
+      ..writeln('    // TODO: Register your custom commands here')
+      ..writeln('    // Example:')
+      ..writeln('    // context.subscriptions.push(vscode.commands.registerCommand("yourextension.command", () => {')
+      ..writeln('    //     if (provider.view) {')
+      ..writeln(
+        '    //         provider.view.webview.postMessage({ type: '
+        '"your-message" });',
+      )
+      ..writeln('    //     }')
+      ..writeln('    // }));')
+      ..writeln('}')
+      ..writeln()
+      ..writeln('export function deactivate() {')
+      ..writeln("    console.log('Flutter VSCode extension deactivated');")
+      ..writeln('}');
 
     buffer.writeln(_getWebviewProviderClass(projectName));
 

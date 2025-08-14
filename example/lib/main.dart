@@ -7,9 +7,12 @@ void main() {
   runApp(const MyApp());
 }
 
+/// Main application widget.
 class MyApp extends StatelessWidget {
+  /// Creates the main application widget.
   const MyApp({super.key});
 
+  /// Builds the main application widget.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,10 +25,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// Home page widget with counter functionality.
 class MyHomePage extends StatefulWidget {
+  /// Creates the home page widget.
   const MyHomePage({required this.title, super.key});
+  
+  /// The title to display in the app bar.
   final String title;
 
+  /// Creates the state for this widget.
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -39,11 +47,12 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     try {
       _messageHandler = WebviewMessageHandler();
-    } catch (e) {
+    } on Exception catch (e) {
       print('Error initializing message handler: $e');
     }
 
-    // Set up message handlers, this is separated in order to isolate the js_interop to one spot
+    // Set up message handlers, this is separated in order to isolate
+    // the js_interop to one spot
     _messageHandler?.setMessageHandler((message) {
       final messageType = message.type;
 

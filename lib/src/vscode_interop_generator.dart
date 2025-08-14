@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'package:build/build.dart';
 
+/// Generates TypeScript interop code for VSCode communication.
+/// 
+/// This builder creates the necessary TypeScript code for handling
+/// communication between the Flutter webview and VSCode extension.
 class VSCodeInteropGenerator implements Builder {
   @override
   Map<String, List<String>> get buildExtensions => {
@@ -16,7 +20,7 @@ class VSCodeInteropGenerator implements Builder {
       final output = _generateVSCodeInterop();
       final outputId = AssetId(inputId.package, 'lib/vscode_interop.dart');
       await buildStep.writeAsString(outputId, output);
-    } catch (e) {
+    } on Exception catch (e) {
       print('Error generating vscode_interop: $e');
     }
   }

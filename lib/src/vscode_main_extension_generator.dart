@@ -4,6 +4,10 @@ import 'dart:io';
 import 'package:build/build.dart';
 import 'package:path/path.dart' as p;
 
+/// Generates the main TypeScript extension entry point.
+/// 
+/// This builder creates the main extension file that handles
+/// activation, deactivation, and command registration.
 class VSCodeMainExtensionGenerator implements Builder {
   @override
   Map<String, List<String>> get buildExtensions => {
@@ -17,7 +21,8 @@ class VSCodeMainExtensionGenerator implements Builder {
 
     try {
       // Update the main extension.ts file to use the generated code
-      final extensionPath = p.join(Directory.current.path, 'src', 'extension.ts');
+      final extensionPath = 
+          p.join(Directory.current.path, 'src', 'extension.ts');
       final extensionFile = File(extensionPath);
       
       if (extensionFile.existsSync()) {
@@ -28,7 +33,7 @@ class VSCodeMainExtensionGenerator implements Builder {
         final outputId = AssetId(inputId.package, 'src/extension.ts.updated');
         await buildStep.writeAsString(outputId, 'Updated extension.ts');
       }
-    } catch (e) {
+    } on Exception catch (e) {
       print('Error updating extension.ts: $e');
     }
   }

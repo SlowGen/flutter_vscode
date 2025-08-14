@@ -7,9 +7,5 @@ class VSCodeWebViewHelper {
   static void initialize() {
     if (_initialized) return;
     _initialized = true;
-
-    // TODO: Implement message handling using package:web instead of deprecated dart:html
-    // This is a simplified stub - full implementation would need proper js_interop setup
-    // For production use, consider using package:web instead of direct web libraries
   }
 }

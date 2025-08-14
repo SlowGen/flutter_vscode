@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print - This is a CLI tool that needs console output
 
 import 'dart:io';
 import 'package:path/path.dart' as p;
@@ -24,7 +24,7 @@ void main() {
     print('Next steps:');
     print('1. Run: npm install');
     print('2. Press F5 in VS Code to run the extension');
-  } catch (e, stackTrace) {
+  } on Exception catch (e, stackTrace) {
     print('');
     print('❌ Error generating VSCode extension files:');
     print('Error: $e');
@@ -42,20 +42,24 @@ void main() {
 }
 
 void _createDirectories(String currentDirectory) {
-  Directory(p.join(currentDirectory, '.vscode')).createSync(recursive: true);
-  Directory(p.join(currentDirectory, 'out')).createSync(recursive: true);
-  Directory(p.join(currentDirectory, 'scripts')).createSync(recursive: true);
-  Directory(p.join(currentDirectory, 'src')).createSync(recursive: true);
+  Directory(p.join(currentDirectory, '.vscode'))
+      .createSync(recursive: true);
+  Directory(p.join(currentDirectory, 'out'))
+      .createSync(recursive: true);
+  Directory(p.join(currentDirectory, 'scripts'))
+      .createSync(recursive: true);
+  Directory(p.join(currentDirectory, 'src'))
+      .createSync(recursive: true);
 }
 
 void _createLaunchConfig(String currentDirectory) {
-  final file = File(p.join(currentDirectory, '.vscode', 'launch.json'));
-  file.writeAsStringSync(_getLaunchJson());
+  File(p.join(currentDirectory, '.vscode', 'launch.json'))
+      .writeAsStringSync(_getLaunchJson());
 }
 
 void _createCompileScript(String currentDirectory) {
-  final file = File(p.join(currentDirectory, 'scripts', 'compile.sh'));
-  file.writeAsStringSync(_getCompileScript());
+  final file = File(p.join(currentDirectory, 'scripts', 'compile.sh'))
+    ..writeAsStringSync(_getCompileScript());
 
   if (Platform.isLinux || Platform.isMacOS) {
     Process.runSync('chmod', ['+x', file.path]);
@@ -77,33 +81,33 @@ void _createExtensionFile(String currentDirectory) {
 }
 
 void _createPackageJson(String currentDirectory) {
-  final file = File(p.join(currentDirectory, 'package.json'));
-  file.writeAsStringSync(_getPackageJson());
+  File(p.join(currentDirectory, 'package.json'))
+      .writeAsStringSync(_getPackageJson());
 }
 
 void _createTsConfig(String currentDirectory) {
-  final file = File(p.join(currentDirectory, 'tsconfig.json'));
-  file.writeAsStringSync(_getTsConfig());
+  File(p.join(currentDirectory, 'tsconfig.json'))
+      .writeAsStringSync(_getTsConfig());
 }
 
 void _createWebFolder(String currentDirectory) {
   // Create web directory structure
-  Directory(p.join(currentDirectory, 'web')).createSync(recursive: true);
+  Directory(p.join(currentDirectory, 'web'))
+      .createSync(recursive: true);
   Directory(p.join(currentDirectory, 'web', 'icons'))
       .createSync(recursive: true);
 
   // Create or modify index.html for VSCode webview compatibility
-  final indexFile = File(p.join(currentDirectory, 'web', 'index.html'));
-  indexFile.writeAsStringSync(_getWebIndexHtml());
+  File(p.join(currentDirectory, 'web', 'index.html'))
+      .writeAsStringSync(_getWebIndexHtml());
 
   // Create flutter_bootstrap.js
-  final bootstrapFile =
-      File(p.join(currentDirectory, 'web', 'flutter_bootstrap.js'));
-  bootstrapFile.writeAsStringSync(_getFlutterBootstrapJs());
+  File(p.join(currentDirectory, 'web', 'flutter_bootstrap.js'))
+      .writeAsStringSync(_getFlutterBootstrapJs());
 
   // Create manifest.json
-  final manifestFile = File(p.join(currentDirectory, 'web', 'manifest.json'));
-  manifestFile.writeAsStringSync(_getManifestJson());
+  File(p.join(currentDirectory, 'web', 'manifest.json'))
+      .writeAsStringSync(_getManifestJson());
 
   // Copy favicon if it exists from example, otherwise create a placeholder
   final exampleFavicon =

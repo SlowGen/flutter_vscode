@@ -171,7 +171,8 @@ void main(List<String> arguments) async {
   // Check if this is a Flutter project
   final pubspecFile = File('${currentDir.path}/pubspec.yaml');
   if (!pubspecFile.existsSync()) {
-    print('Error: This does not appear to be a Flutter project. No pubspec.yaml found.');
+    print('Error: This does not appear to be a Flutter project. '
+        'No pubspec.yaml found.');
     exit(1);
   }
   
@@ -182,18 +183,17 @@ void main(List<String> arguments) async {
   }
   
   // Create extension.ts
-  final extensionFile = File('${srcDir.path}/extension.ts');
-  extensionFile.writeAsStringSync(extensionTemplate);
+  File('${srcDir.path}/extension.ts').writeAsStringSync(extensionTemplate);
   print('Created: src/extension.ts');
   
   // Create package.json
-  final packageJsonFile = File('${currentDir.path}/package.json');
-  packageJsonFile.writeAsStringSync(packageJsonTemplate);
+  File('${currentDir.path}/package.json')
+      .writeAsStringSync(packageJsonTemplate);
   print('Created: package.json');
   
   // Create tsconfig.json
-  final tsconfigFile = File('${currentDir.path}/tsconfig.json');
-  tsconfigFile.writeAsStringSync(tsconfigTemplate);
+  File('${currentDir.path}/tsconfig.json')
+      .writeAsStringSync(tsconfigTemplate);
   print('Created: tsconfig.json');
   
   // Create web directory if it doesn't exist
@@ -203,17 +203,20 @@ void main(List<String> arguments) async {
   }
   
   // Create web/index.html
-  final indexFile = File('${webDir.path}/index.html');
-  indexFile.writeAsStringSync(webIndexTemplate);
+  File('${webDir.path}/index.html').writeAsStringSync(webIndexTemplate);
   print('Created: web/index.html');
   
   print(r'\nFlutter VS Code extension scaffolding complete!');
   print(r'\nNext steps:');
-  print('1. Define your VS Code controllers using @VSCodeController and @VSCodeCommand annotations');
-  print('2. Run "dart run build_runner build" to generate the Dart and TypeScript handlers');
-  print('3. Copy the generated *.handlers.ts files from lib/ to src/ directory');
+  print('1. Define your VS Code controllers using @VSCodeController and '
+      '@VSCodeCommand annotations');
+  print('2. Run "dart run build_runner build" to generate the Dart and '
+      'TypeScript handlers');
+  print('3. Copy the generated *.handlers.ts files from lib/ to src/ '
+      'directory');
   print('4. Run "npm install" to install TypeScript dependencies');
   print('5. Run "flutter build web" to build your Flutter app');
   print('6. Run "npm run compile" to compile TypeScript');
-  print('7. Open VS Code and press F5 to run the extension in development mode');
+  print('7. Open VS Code and press F5 to run the extension in '
+      'development mode');
 }

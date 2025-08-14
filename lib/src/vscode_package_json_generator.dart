@@ -5,6 +5,10 @@ import 'dart:io';
 import 'package:build/build.dart';
 import 'package:path/path.dart' as p;
 
+/// Generates package.json for VSCode extension.
+/// 
+/// This builder creates the package.json file that defines the
+/// VSCode extension metadata, commands, and configuration.
 class VSCodePackageJsonGenerator implements Builder {
   @override
   Map<String, List<String>> get buildExtensions => {
@@ -18,7 +22,8 @@ class VSCodePackageJsonGenerator implements Builder {
 
     try {
       // Update the package.json file to include command contributions
-      final packageJsonPath = p.join(Directory.current.path, 'package.json');
+      final packageJsonPath = 
+          p.join(Directory.current.path, 'package.json');
       final packageJsonFile = File(packageJsonPath);
 
       if (packageJsonFile.existsSync()) {
@@ -37,7 +42,7 @@ class VSCodePackageJsonGenerator implements Builder {
         final outputId = AssetId(inputId.package, 'package.json.updated');
         await buildStep.writeAsString(outputId, 'Updated package.json');
       }
-    } catch (e) {
+    } on Exception catch (e) {
       print('Error updating package.json: $e');
     }
   }
@@ -58,11 +63,12 @@ class VSCodePackageJsonGenerator implements Builder {
           }
         }
       }
-    } catch (e) {
+    } on Exception {
       // Use fallback if can't read pubspec
     }
 
-    // Use existing values if they're not template values, otherwise use project name
+    // Use existing values if they're not template values, otherwise use
+    // project name
     if (packageJson['name'] == null ||
         packageJson['name'] == 'your_extension_name') {
       packageJson['name'] = projectName;
@@ -105,7 +111,12 @@ class VSCodePackageJsonGenerator implements Builder {
     // Ensure views section exists and has correct view ID
     contributes['views'] = {
       'explorer': [
-        {'id': viewId, 'name': displayName, 'type': 'webview', 'when': 'true'}
+        {
+          'id': viewId,
+          'name': displayName,
+          'type': 'webview',
+          'when': 'true'
+        }
       ]
     };
 

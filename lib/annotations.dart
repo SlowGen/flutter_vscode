@@ -5,6 +5,7 @@
 /// The generator will process classes with this annotation to create
 /// the communication bridge to the VS Code extension runtime.
 class VSCodeController {
+  /// Creates a new VSCode controller annotation.
   const VSCodeController();
 }
 
@@ -14,5 +15,6 @@ class VSCodeController {
 /// The annotated method must be abstract and part of a class
 /// annotated with [VSCodeController].
 class VSCodeCommand {
+  /// Creates a new VSCode command annotation.
   const VSCodeCommand();
 }

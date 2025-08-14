@@ -41,6 +41,10 @@ Builder vscodePackageJsonGenerator(BuilderOptions options) {
   return VSCodePackageJsonGenerator();
 }
 
+/// Configures the build process for the VS Code interop generator.
+///
+/// This function is referenced in `build.yaml` and tells `build_runner`
+/// how to apply the [VSCodeInteropGenerator] to the user's source code.
 Builder vscodeInteropGenerator(BuilderOptions options) {
   return VSCodeInteropGenerator();
 }

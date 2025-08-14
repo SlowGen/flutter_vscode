@@ -11,7 +11,8 @@ abstract class VSCodeControllerBase {
   static final Map<String, Completer<dynamic>> _pendingRequests = {};
   static final Random _random = Random();
 
-  /// Sends a command to the VS Code extension and optionally waits for a response.
+  /// Sends a command to the VS Code extension and optionally waits for a
+  /// response.
   static Future<T> sendCommand<T>(
     String command,
     List<dynamic> params, {
@@ -42,7 +43,8 @@ abstract class VSCodeControllerBase {
 
   /// Generates a unique request ID for message tracking.
   static String _generateRequestId() {
-    return 'req_${DateTime.now().millisecondsSinceEpoch}_${_random.nextInt(10000)}';
+    return 'req_${DateTime.now().millisecondsSinceEpoch}_'
+        '${_random.nextInt(10000)}';
   }
 
   /// Handles incoming messages from the VS Code extension.
