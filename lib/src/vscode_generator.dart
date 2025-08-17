@@ -1,26 +1,22 @@
-// This is the heart of the code generation.
-// It finds annotated code and generates the necessary files.
-// Note: This is a simplified skeleton for now.
-
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:flutter_vscode/annotations.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// Generates Dart code for VSCode controller implementations.
-/// 
+///
 /// This generator creates implementation classes for abstract VSCode
 /// controllers, handling command registration and message routing.
 class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
   @override
   dynamic generateForAnnotatedElement(
-    covariant Element2 element,
+    covariant Element element,
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
     // Ensure we are working with a class element.
-    if (element is! ClassElement2) {
+    if (element is! ClassElement) {
       throw InvalidGenerationSourceError(
         '`@VSCodeController` can only be used on classes.',
         element: element,
@@ -43,7 +39,7 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
       ..writeln();
 
     // Find all methods annotated with @VSCodeCommand.
-    for (final method in classElement.methods2) {
+    for (final method in classElement.methods) {
       const checker = TypeChecker.fromUrl(
         'package:flutter_vscode/annotations.dart#VSCodeCommand',
       );
@@ -63,6 +59,7 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
       ..writeln('}')
       ..writeln();
 
+    // TODO(claude): implement the TS code here too
     // In a real implementation, we would also generate the TypeScript
     // file here.
     // For now, we'll just focus on the Dart side.
@@ -70,7 +67,7 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
     return buffer.toString();
   }
 
-  String _generateMethodImplementation(MethodElement2 method) {
+  String _generateMethodImplementation(MethodElement method) {
     final methodName = method.lookupName;
     final parameters = method.formalParameters;
     final returnType = method.returnType;
@@ -105,8 +102,7 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
         );
       } else {
         // This is a Future<T> where T is not void.
-        final returnTypeName =
-            futureTypeArg?.getDisplayString() ?? 'dynamic';
+        final returnTypeName = futureTypeArg?.getDisplayString() ?? 'dynamic';
         buffer.writeln(
           "  return VSCodeControllerBase.sendCommand<$returnTypeName>('"
           "$methodName', [$paramList], expectsResponse: true,);",
