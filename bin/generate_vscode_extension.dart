@@ -15,8 +15,7 @@ void main() {
     _createExtensionFile(currentDirectory);
     _createPackageJson(currentDirectory);
     _createTsConfig(currentDirectory);
-    _createWebFolder(currentDirectory);
-    _createMainDart(currentDirectory);
+    _updateWebFolder(currentDirectory);
     _updateGitignore(currentDirectory);
 
     print('');
@@ -42,19 +41,16 @@ void main() {
 }
 
 void _createDirectories(String currentDirectory) {
-  Directory(p.join(currentDirectory, '.vscode'))
-      .createSync(recursive: true);
-  Directory(p.join(currentDirectory, 'out'))
-      .createSync(recursive: true);
-  Directory(p.join(currentDirectory, 'scripts'))
-      .createSync(recursive: true);
-  Directory(p.join(currentDirectory, 'src'))
-      .createSync(recursive: true);
+  Directory(p.join(currentDirectory, '.vscode')).createSync(recursive: true);
+  Directory(p.join(currentDirectory, 'out')).createSync(recursive: true);
+  Directory(p.join(currentDirectory, 'scripts')).createSync(recursive: true);
+  Directory(p.join(currentDirectory, 'src')).createSync(recursive: true);
 }
 
 void _createLaunchConfig(String currentDirectory) {
-  File(p.join(currentDirectory, '.vscode', 'launch.json'))
-      .writeAsStringSync(_getLaunchJson());
+  File(
+    p.join(currentDirectory, '.vscode', 'launch.json'),
+  ).writeAsStringSync(_getLaunchJson());
 }
 
 void _createCompileScript(String currentDirectory) {
@@ -70,8 +66,11 @@ void _createExtensionFile(String currentDirectory) {
   final file = File(p.join(currentDirectory, 'src', 'extension.ts'));
 
   // Try to copy from template if it exists
-  final templatePath =
-      p.join(Directory.current.path, 'tool', 'extension.ts.template');
+  final templatePath = p.join(
+    Directory.current.path,
+    'tool',
+    'extension.ts.template',
+  );
   if (File(templatePath).existsSync()) {
     final content = File(templatePath).readAsStringSync();
     file.writeAsStringSync(content);
@@ -81,61 +80,27 @@ void _createExtensionFile(String currentDirectory) {
 }
 
 void _createPackageJson(String currentDirectory) {
-  File(p.join(currentDirectory, 'package.json'))
-      .writeAsStringSync(_getPackageJson());
+  File(
+    p.join(currentDirectory, 'package.json'),
+  ).writeAsStringSync(_getPackageJson());
 }
 
 void _createTsConfig(String currentDirectory) {
-  File(p.join(currentDirectory, 'tsconfig.json'))
-      .writeAsStringSync(_getTsConfig());
+  File(
+    p.join(currentDirectory, 'tsconfig.json'),
+  ).writeAsStringSync(_getTsConfig());
 }
 
-void _createWebFolder(String currentDirectory) {
-  // Create web directory structure
-  Directory(p.join(currentDirectory, 'web'))
-      .createSync(recursive: true);
-  Directory(p.join(currentDirectory, 'web', 'icons'))
-      .createSync(recursive: true);
-
-  // Create or modify index.html for VSCode webview compatibility
-  File(p.join(currentDirectory, 'web', 'index.html'))
-      .writeAsStringSync(_getWebIndexHtml());
+void _updateWebFolder(String currentDirectory) {
+  // Modify index.html for VSCode webview compatibility
+  File(
+    p.join(currentDirectory, 'web', 'index.html'),
+  ).writeAsStringSync(_getWebIndexHtml());
 
   // Create flutter_bootstrap.js
-  File(p.join(currentDirectory, 'web', 'flutter_bootstrap.js'))
-      .writeAsStringSync(_getFlutterBootstrapJs());
-
-  // Create manifest.json
-  File(p.join(currentDirectory, 'web', 'manifest.json'))
-      .writeAsStringSync(_getManifestJson());
-
-  // Copy favicon if it exists from example, otherwise create a placeholder
-  final exampleFavicon =
-      File(p.join(Directory.current.path, 'example', 'web', 'favicon.png'));
-  final targetFavicon = File(p.join(currentDirectory, 'web', 'favicon.png'));
-  if (exampleFavicon.existsSync()) {
-    exampleFavicon.copySync(targetFavicon.path);
-  }
-
-  // Copy icons from example if they exist
-  final iconsDir =
-      Directory(p.join(Directory.current.path, 'example', 'web', 'icons'));
-  if (iconsDir.existsSync()) {
-    for (final file in iconsDir.listSync()) {
-      if (file is File) {
-        final targetPath =
-            p.join(currentDirectory, 'web', 'icons', p.basename(file.path));
-        file.copySync(targetPath);
-      }
-    }
-  }
-}
-
-void _createMainDart(String currentDirectory) {
-  final file = File(p.join(currentDirectory, 'lib', 'main.dart'));
-  if (!file.existsSync()) {
-    file.writeAsStringSync(_getMainDart());
-  }
+  File(
+    p.join(currentDirectory, 'web', 'flutter_bootstrap.js'),
+  ).writeAsStringSync(_getFlutterBootstrapJs());
 }
 
 void _updateGitignore(String currentDirectory) {
@@ -173,8 +138,9 @@ void _updateGitignore(String currentDirectory) {
 
     if (newEntries.isNotEmpty) {
       file.writeAsStringSync(
-          '\n# VSCode extension entries\n${newEntries.join('\n')}\n',
-          mode: FileMode.append);
+        '\n# VSCode extension entries\n${newEntries.join('\n')}\n',
+        mode: FileMode.append,
+      );
     }
   } else {
     file.writeAsStringSync('${entries.join('\n')}\n');
@@ -230,7 +196,6 @@ import * as fs from 'fs';
 
 // This extension is a starting template for a Flutter VSCode extension.
 // Extension configuration and commands will be generated by build_runner.
-// You can customize this file as needed for your specific extension logic.
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('Flutter VSCode extension is now active!');
@@ -238,7 +203,6 @@ export function activate(context: vscode.ExtensionContext) {
     // Extension initialization code will be generated here by build_runner
     // based on your Flutter app configuration.
 
-    // TODO: Add your extension initialization logic here
 }
 
 export function deactivate() {
@@ -272,7 +236,6 @@ String _getPackageJson() {
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "scripts/compile.sh",
-    "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
@@ -368,172 +331,5 @@ _flutter.loader.load({
         canvasKitBaseUrl: "canvaskit/"
     },
 });
-''';
-}
-
-String _getManifestJson() {
-  return '''
-{
-  "name": "Flutter VSCode Extension",
-  "short_name": "Flutter VSCode",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#0175C2",
-  "theme_color": "#0175C2",
-  "description": "A Flutter app for VSCode extension",
-  "orientation": "portrait-primary",
-  "prefer_related_applications": false,
-  "icons": [
-    {
-      "src": "icons/Icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icons/Icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    },
-    {
-      "src": "icons/Icon-maskable-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "icons/Icon-maskable-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ]
-}''';
-}
-
-String _getMainDart() {
-  return r'''
-import 'package:flutter/material.dart';
-import 'vscode_interop.dart';
-
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter VSCode Extension',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter VSCode Extension Demo'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  WebviewMessageHandler? _messageHandler;
-
-  @override
-  void initState() {
-    super.initState();
-    try {
-      _messageHandler = WebviewMessageHandler();
-    } catch (e) {
-      print('Error initializing message handler: $e');
-    }
-
-    // Set up message handlers for VSCode communication
-    _messageHandler?.setMessageHandler((message) {
-      final messageType = message.type;
-
-      switch (messageType) {
-        case 'increment':
-          _incrementCounter();
-          break;
-        case 'reset':
-          _resetCounter();
-          break;
-      }
-    });
-
-    // Send initial counter value
-    _updateCounterInVsCode();
-  }
-
-  @override
-  void dispose() {
-    _messageHandler?.dispose();
-    super.dispose();
-  }
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-    _updateCounterInVsCode();
-  }
-
-  void _resetCounter() {
-    setState(() {
-      _counter = 0;
-    });
-    _updateCounterInVsCode();
-  }
-
-  void _updateCounterInVsCode() {
-    _messageHandler?.sendMessage(
-      Message(type: 'counterUpdate', value: _counter),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'This counter is synced with VSCode!',
-              style: TextStyle(color: Colors.grey),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-}
 ''';
 }
