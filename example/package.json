@@ -1,71 +1,38 @@
 {
-  "name": "ext_poc",
-  "description": "VSCode extension POC",
+  "name": "flutter-vscode-extension",
+  "displayName": "Flutter VS Code Extension",
+  "description": "A VS Code extension built with Flutter",
   "version": "0.0.1",
-  "publisher": "slowgen",
-  "private": true,
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/SlowGen/ext_poc"
-  },
   "engines": {
-    "vscode": "^1.80.0"
+    "vscode": "^1.74.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onWebviewView:extPoc.counter"
-  ],
+  "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
-    "views": {
-      "explorer": [
-        {
-          "icon": "web/icons/Icon-192.png",
-          "id": "extPoc.counter",
-          "name": "Flutter Counter",
-          "type": "webview"
-        }
-      ]
-    },
     "commands": [
       {
-        "command": "extPoc.addOne",
-        "category": "Counter Button",
-        "title": "Add One",
-        "icon": "$(add)"
-      },
-      {
-        "command": "extPoc.reset",
-        "category": "Counter Button",
-        "title": "Reset to zero",
-        "icon": "$(clear-all)"
+        "command": "flutter-vscode.openWebview",
+        "title": "Open Flutter Webview"
       }
-    ],
-    "menus": {
-      "view/title": [
-        {
-          "command": "extPoc.addOne",
-          "group": "navigation",
-          "when": "view == extPoc.counter"
-        },
-        {
-          "command": "extPoc.reset",
-          "group": "navigation",
-          "when": "view == extPoc.counter"
-        }
-      ]
-    }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "scripts/compile.sh",
+    "compile": "npm run build",
+    "build": "tsc -p ./",
     "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
-    "@types/vscode": "^1.80.0",
-    "typescript": "^5.1.3"
+    "@types/vscode": "^1.74.0",
+    "typescript": "^4.9.4",
+    "@types/node": "^18.0.0",
+    "@types/glob": "^8.0.0",
+    "@types/mocha": "^10.0.0",
+    "eslint": "^8.24.0",
+    "glob": "^8.0.0",
+    "mocha": "^10.0.0"
   }
 }

@@ -4,7 +4,7 @@ import 'dart:io';
 
 const String extensionTemplate = '''
 import * as vscode from 'vscode';
-import { handleCommand } from '../lib/api_controller.handlers';
+import { handleCommand } from '../src/api_controller.handlers';
 
 export function activate(context: vscode.ExtensionContext) {
     const disposable = vscode.commands.registerCommand('flutter-vscode.openWebview', () => {
@@ -48,7 +48,7 @@ function getWebviewContent(): string {
     <script>
         // Bridge for communication with VS Code
         const vscode = acquireVsCodeApi();
-        
+
         window.addEventListener('message', event => {
             const message = event.data;
             if (message && message.requestId) {
@@ -56,7 +56,7 @@ function getWebviewContent(): string {
                 window.postMessage(message, '*');
             }
         });
-        
+
         // Override postMessage to send to VS Code
         const originalPostMessage = window.postMessage;
         window.postMessage = function(message, origin) {
@@ -98,14 +98,19 @@ const String packageJsonTemplate = '''
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
+    "compile": "npm run build",
+    "build": "tsc -p ./",
     "watch": "tsc -watch -p ./"
   },
-  "dependencies": {
-    "@types/vscode": "^1.74.0"
-  },
   "devDependencies": {
-    "typescript": "^4.9.4"
+    "@types/vscode": "^1.74.0",
+    "typescript": "^4.9.4",
+    "@types/node": "^18.0.0",
+    "@types/glob": "^8.0.0",
+    "@types/mocha": "^10.0.0",
+    "eslint": "^8.24.0",
+    "glob": "^8.0.0",
+    "mocha": "^10.0.0"
   }
 }
 ''';
@@ -117,11 +122,14 @@ const String tsconfigTemplate = '''
     "target": "ES2020",
     "outDir": "out",
     "lib": [
-      "ES2020"
+      "ES2020",
+      "dom"
     ],
     "sourceMap": true,
     "rootDir": "src",
-    "strict": true
+    "strict": true,
+    "moduleResolution": "node",
+    "types": ["node"]
   }
 }
 ''';
@@ -136,7 +144,7 @@ const String webIndexTemplate = '''
   <script>
     // Bridge for communication with VS Code
     const vscode = acquireVsCodeApi();
-    
+
     window.addEventListener('message', event => {
       const message = event.data;
       if (message && message.requestId) {
@@ -144,7 +152,7 @@ const String webIndexTemplate = '''
         window.postMessage(message, '*');
       }
     });
-    
+
     // Override postMessage to send to VS Code
     const originalPostMessage = window.postMessage;
     window.postMessage = function(message, origin) {
@@ -163,60 +171,84 @@ const String webIndexTemplate = '''
 </html>
 ''';
 
+const String compileShTemplate = '''
+#!/bin/bash
+dart run build_runner build --delete-conflicting-outputs
+if [ -f web/index.html.temp ]; then
+  mv web/index.html.temp web/index.html
+fi
+flutter build web --no-web-resources-cdn --csp --pwa-strategy none --no-tree-shake-icons
+''';
+
 void main(List<String> arguments) async {
   print('Initializing Flutter VS Code extension...');
-  
+
   final currentDir = Directory.current;
-  
+
   // Check if this is a Flutter project
   final pubspecFile = File('${currentDir.path}/pubspec.yaml');
   if (!pubspecFile.existsSync()) {
-    print('Error: This does not appear to be a Flutter project. '
-        'No pubspec.yaml found.');
+    print(
+      'Error: No pubspec.yaml found.',
+    );
     exit(1);
   }
-  
+
   // Create src directory for TypeScript files
   final srcDir = Directory('${currentDir.path}/src');
   if (!srcDir.existsSync()) {
     srcDir.createSync();
   }
-  
+
   // Create extension.ts
   File('${srcDir.path}/extension.ts').writeAsStringSync(extensionTemplate);
   print('Created: src/extension.ts');
-  
+
   // Create package.json
-  File('${currentDir.path}/package.json')
-      .writeAsStringSync(packageJsonTemplate);
+  File(
+    '${currentDir.path}/package.json',
+  ).writeAsStringSync(packageJsonTemplate);
   print('Created: package.json');
-  
+
   // Create tsconfig.json
-  File('${currentDir.path}/tsconfig.json')
-      .writeAsStringSync(tsconfigTemplate);
+  File('${currentDir.path}/tsconfig.json').writeAsStringSync(tsconfigTemplate);
   print('Created: tsconfig.json');
-  
+
   // Create web directory if it doesn't exist
   final webDir = Directory('${currentDir.path}/web');
   if (!webDir.existsSync()) {
     webDir.createSync();
   }
-  
+
   // Create web/index.html
   File('${webDir.path}/index.html').writeAsStringSync(webIndexTemplate);
   print('Created: web/index.html');
-  
-  print(r'\nFlutter VS Code extension scaffolding complete!');
-  print(r'\nNext steps:');
-  print('1. Define your VS Code controllers using @VSCodeController and '
-      '@VSCodeCommand annotations');
-  print('2. Run "dart run build_runner build" to generate the Dart and '
-      'TypeScript handlers');
-  print('3. Copy the generated *.handlers.ts files from lib/ to src/ '
-      'directory');
-  print('4. Run "npm install" to install TypeScript dependencies');
-  print('5. Run "flutter build web" to build your Flutter app');
-  print('6. Run "npm run compile" to compile TypeScript');
-  print('7. Open VS Code and press F5 to run the extension in '
-      'development mode');
+
+  // Create scripts directory if it doesn't exist
+  final scriptsDir = Directory('${currentDir.path}/scripts');
+  if (!scriptsDir.existsSync()) {
+    scriptsDir.createSync();
+  }
+
+  // Create scripts/compile.sh
+  File('${scriptsDir.path}/compile.sh').writeAsStringSync(compileShTemplate);
+  if (Platform.isLinux || Platform.isMacOS) {
+    await Process.run('chmod', ['+x', '${scriptsDir.path}/compile.sh']);
+  }
+  print('Created: scripts/compile.sh');
+  print('Flutter VS Code extension scaffolding complete!');
+  print('Next steps:');
+  print('1. Run "npm install" to install TypeScript dependencies');
+  print(
+    '2. Define your VS Code controllers using ',
+  );
+  print('@VSCodeController and @VSCodeCommand annotations');
+  print('3. Run "npm run compile" to build everything');
+  print(
+    '4. Open VS Code and press F5 to run the extension in development mode',
+  );
 }
+  // TODO(gemini): the initally generated code is missing the .gitignore additions. Init should add node_modules, out and files generated with build_runner
+  // TODO(gemini): The initially generated code should contain code on the ts side that is capable of receiving the messages sent from the flutter side
+  // TODO(gemini): The vscode_interop should be built into the package and accessible by the user via the package. The user can instantiate the message handler via the package and there should be instructions on how to do so in the readme
+  // TODO(gemini): Can we set up the init script to run npm install for the user after the appropriate files have been created?

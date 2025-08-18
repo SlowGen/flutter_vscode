@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:flutter_vscode/annotations.dart';
@@ -11,7 +11,7 @@ import 'package:source_gen/source_gen.dart';
 class VSCodeTsGenerator implements Builder {
   @override
   Map<String, List<String>> get buildExtensions => {
-        'lib/{{}}.dart': ['src/{{}}.handlers.ts']
+        'lib/{{}}.dart': ['src/{{}}.handlers.ts'],
       };
 
   @override
@@ -32,8 +32,10 @@ class VSCodeTsGenerator implements Builder {
 
       if (output != null) {
         // Generate TypeScript file in src folder instead of lib folder
-        final fileName =
-            inputId.pathSegments.last.replaceAll('.dart', '.handlers.ts');
+        final fileName = inputId.pathSegments.last.replaceAll(
+          '.dart',
+          '.handlers.ts',
+        );
         final outputId = AssetId(inputId.package, 'src/$fileName');
         await buildStep.writeAsString(outputId, output);
       }
@@ -51,8 +53,9 @@ class VSCodeTsGenerator implements Builder {
     const controllerChecker = TypeChecker.fromUrl(
       'package:flutter_vscode/annotations.dart#VSCodeController',
     );
-    final controllers = 
-        library.classes.where(controllerChecker.hasAnnotationOf);
+    final controllers = library.classes.where(
+      controllerChecker.hasAnnotationOf,
+    );
 
     if (controllers.isEmpty) {
       return null;
@@ -70,9 +73,11 @@ class VSCodeTsGenerator implements Builder {
       'package:flutter_vscode/annotations.dart#VSCodeCommand',
     );
     for (final controller in controllers) {
-      for (final method in controller.methods2) {
+      for (final method in controller.methods) {
         if (commandChecker.hasAnnotationOf(method)) {
-          buffer.writeln(_generateCommandHandler(method));
+          buffer.writeln(
+            _generateCommandHandler(method, buildStep.inputId.package),
+          );
         }
       }
     }
@@ -84,29 +89,33 @@ class VSCodeTsGenerator implements Builder {
     return buffer.toString();
   }
 
-  String _generateCommandHandler(MethodElement2 method) {
+  String _generateCommandHandler(MethodElement method, String packageName) {
     final methodName = method.lookupName;
     final parameters = method.formalParameters;
 
-    final buffer = StringBuffer()
-      ..writeln("    case '$methodName': {");
+    final buffer = StringBuffer()..writeln("    case '$methodName': {");
 
-    final paramNames = parameters.isNotEmpty
-        ? ', ${parameters.asMap().entries.map((entry) => 
-            'message.params[${entry.key}]').join(', ')}'
-        : '';
+    if (parameters.isNotEmpty) {
+      buffer.writeln('      const params = {');
+      for (final param in parameters) {
+        buffer.writeln('        ${param.name}: message.params.${param.name},');
+      }
+      buffer.writeln('      };');
+    }
+
+    final paramNames = parameters.isNotEmpty ? ', params' : '';
 
     if (method.returnType.toString().contains('Future<void>') ||
         method.returnType is VoidType) {
       buffer.writeln(
-        "      vscode.commands.executeCommand('" 
-        "flutter-demo.$methodName'$paramNames);",
+        "      vscode.commands.executeCommand('"
+        "$packageName.$methodName'$paramNames);",
       );
     } else {
       buffer
         ..writeln(
-          "      vscode.commands.executeCommand('" 
-          "flutter-demo.$methodName'$paramNames).then(result => {",
+          "      vscode.commands.executeCommand('"
+          "$packageName.$methodName'$paramNames).then(result => {",
         )
         ..writeln(
           '        panel.webview.postMessage({ '
@@ -122,3 +131,5 @@ class VSCodeTsGenerator implements Builder {
     return buffer.toString();
   }
 }
+
+Builder vscodeTsGenerator(BuilderOptions options) => VSCodeTsGenerator();

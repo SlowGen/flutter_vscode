@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   /// Creates the home page widget.
   const MyHomePage({required this.title, super.key});
-  
+
   /// The title to display in the app bar.
   final String title;
 

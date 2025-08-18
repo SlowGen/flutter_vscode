@@ -2,19 +2,18 @@
 // It configures the code generator.
 
 import 'package:build/build.dart';
+import 'package:flutter_vscode/src/package_json_builder.dart';
 import 'package:flutter_vscode/src/vscode_extension_generator.dart';
-import 'package:flutter_vscode/src/vscode_generator.dart';
-import 'package:flutter_vscode/src/vscode_interop_generator.dart';
-import 'package:flutter_vscode/src/vscode_package_json_generator.dart';
 import 'package:flutter_vscode/src/vscode_ts_generator.dart';
+import 'package:flutter_vscode/src/webview_builder.dart';
 import 'package:source_gen/source_gen.dart';
 
-/// Configures the build process for the VS Code Dart generator.
+/// Configures the build process for the VS Code Extension generator.
 ///
 /// This function is referenced in `build.yaml` and tells `build_runner`
-/// how to apply the [VSCodeGenerator] to the user's source code.
-Builder vscodeDartGenerator(BuilderOptions options) {
-  return SharedPartBuilder([VSCodeGenerator()], 'vscode');
+/// how to apply the [VscodeExtensionGenerator] to the user's source code.
+Builder vscodeExtensionGenerator(BuilderOptions options) {
+  return SharedPartBuilder([VscodeExtensionGenerator()], 'vscode');
 }
 
 /// Configures the build process for the VS Code TypeScript generator.
@@ -25,26 +24,18 @@ Builder vscodeTsGenerator(BuilderOptions options) {
   return VSCodeTsGenerator();
 }
 
-/// Configures the build process for the VS Code Extension generator.
+/// Configures the build process for the webview builder.
 ///
 /// This function is referenced in `build.yaml` and tells `build_runner`
-/// how to apply the [VSCodeExtensionGenerator] to the user's source code.
-Builder vscodeExtensionGenerator(BuilderOptions options) {
-  return VSCodeExtensionGenerator();
+/// how to apply the [WebviewBuilder] to the user's source code.
+Builder webviewBuilder(BuilderOptions options) {
+  return WebviewBuilder();
 }
 
 /// Configures the build process for the package.json generator.
 ///
 /// This function is referenced in `build.yaml` and tells `build_runner`
-/// how to apply the [VSCodePackageJsonGenerator] to the user's source code.
-Builder vscodePackageJsonGenerator(BuilderOptions options) {
-  return VSCodePackageJsonGenerator();
-}
-
-/// Configures the build process for the VS Code interop generator.
-///
-/// This function is referenced in `build.yaml` and tells `build_runner`
-/// how to apply the [VSCodeInteropGenerator] to the user's source code.
-Builder vscodeInteropGenerator(BuilderOptions options) {
-  return VSCodeInteropGenerator();
+/// how to apply the [PackageJsonBuilder] to the user's source code.
+Builder packageJsonBuilder(BuilderOptions options) {
+  return PackageJsonBuilder();
 }

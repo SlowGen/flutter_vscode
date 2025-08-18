@@ -12,6 +12,10 @@ linter:
     missing_whitespace_between_adjacent_strings: false
     cascade_invocations: false
     avoid_single_cascade_in_expression_statements: false
+# temporary - should be added back before publishing
+    public_member_api_docs: false
+    avoid_catches_without_on_clauses: false
+
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

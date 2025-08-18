@@ -8,9 +8,9 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  # Build dependencies needed for code generation
   analyzer: ^8.1.1
-  build: ^3.0.0
+  # Build dependencies needed for code generation
+  build: ^3.0.2
   flutter:
     sdk: flutter
   # Add this for the annotations
@@ -18,11 +18,11 @@ dependencies:
   # Path package for file manipulation in tools
   path: ^1.8.3
   source_gen: ^3.1.0
+  web: ^1.1.1
 
 dev_dependencies:
   # Add these for the build_runner
-  build_runner: ^2.4.6
-  flutter_lints: ^6.0.0
+  build_runner: ^2.4.9
   flutter_test:
     sdk: flutter
   very_good_analysis: ^9.0.0

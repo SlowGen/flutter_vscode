@@ -1,38 +1,21 @@
 // **************************************************************************
-// VSCodeGenerator
+// VscodeExtensionGenerator
 // **************************************************************************
 
-part of 'api_controller.dart';
+// ignore_for_file: unused_import
 
-class _$ApiController implements ApiController {
-  @override
+import 'package:flutter_vscode/src/vscode_controller_base.dart';
+import 'package:flutter_vscode/src/webview_bridge.dart';
+
+class ApiController extends VSCodeControllerBase {
+  ApiController(WebViewBridge bridge) : super(bridge);
+
+  Future<String> getUserName() {
+    return sendCommand('getUserName', [], expectsResponse: true);
+  }
+
   Future<void> showInformationMessage(String message) {
-    return VSCodeControllerBase.sendCommand(
-      'showInformationMessage',
-      [message],
-      expectsResponse: false,
-    );
+    return sendCommand('showInformationMessage', [message],
+        expectsResponse: true);
   }
-
-  @override
-  Future<String> showInputBox(String prompt) {
-    return VSCodeControllerBase.sendCommand<String>(
-      'showInputBox',
-      [prompt],
-      expectsResponse: true,
-    );
-  }
-
-  @override
-  Future<void> showErrorMessage(String message) {
-    return VSCodeControllerBase.sendCommand(
-      'showErrorMessage',
-      [message],
-      expectsResponse: false,
-    );
-  }
-}
-
-extension ApiControllerFactory on ApiController {
-  static ApiController create() => _$ApiController();
 }

@@ -1,47 +1,35 @@
-targets:
-  $default:
-    builders:
-      flutter_vscode|vscode_dart:
-        enabled: true
-      flutter_vscode|vscode_ts:
-        enabled: true
-      flutter_vscode|vscode_extension:
-        enabled: true
-      flutter_vscode|vscode_package_json:
-        enabled: true
-      flutter_vscode|vscode_interop:
-        enabled: true
-
 builders:
-  vscode_dart:
-    import: "package:flutter_vscode/builder.dart"
-    builder_factories: ["vscodeDartGenerator"]
-    build_extensions: {".dart": [".vscode.g.part"]}
-    auto_apply: dependents
-    build_to: source
-    applies_builders: ["source_gen|combining_builder"]
-  vscode_ts:
-    import: "package:flutter_vscode/builder.dart"
-    builder_factories: ["vscodeTsGenerator"]
-    build_extensions: {"lib/{{}}.dart": ["src/{{}}.handlers.ts"]}
-    auto_apply: dependents
-    build_to: source
-    runs_before: ["source_gen|combining_builder"]
-  vscode_extension:
+  vscode_extension_generator:
     import: "package:flutter_vscode/builder.dart"
     builder_factories: ["vscodeExtensionGenerator"]
-    build_extensions: {"lib/main.dart": ["src/extension.ts"]}
+    build_extensions:
+      .dart: 
+        - ".vscode.g.dart"
+        - ".vscode.extension.ts"
     auto_apply: dependents
     build_to: source
-  vscode_package_json:
-    import: "package:flutter_vscode/builder.dart"
-    builder_factories: ["vscodePackageJsonGenerator"]
-    build_extensions: {"lib/main.dart": ["package.json.updated"]}
+  vscode_ts_generator:
+    import: "package:flutter_vscode/src/vscode_ts_generator.dart"
+    builder_factories: ["vscodeTsGenerator"]
+    build_extensions:
+      .dart: 
+        - ".handlers.ts"
     auto_apply: dependents
     build_to: source
-  vscode_interop:
-    import: "package:flutter_vscode/builder.dart"
-    builder_factories: ["vscodeInteropGenerator"]
-    build_extensions: {"lib/main.dart": ["lib/vscode_interop.dart"]}
+  webview_builder:
+    import: "package:flutter_vscode/src/webview_builder.dart"
+    builder_factories: ["webviewBuilder"]
+    build_extensions:
+      web/index.html: 
+        - "web/index.html.temp"
+        - "web/flutter_bootstrapper.js"
+    auto_apply: dependents
+    build_to: source
+  package_json_builder:
+    import: "package:flutter_vscode/src/package_json_builder.dart"
+    builder_factories: ["packageJsonBuilder"]
+    build_extensions:
+      $lib$: 
+        - "package.json"
     auto_apply: dependents
     build_to: source

@@ -1,172 +1,65 @@
-import 'dart:async';
-import 'dart:io';
-
+import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
+import 'package:flutter_vscode/annotations.dart';
+import 'package:source_gen/source_gen.dart';
 
-/// Generates TypeScript extension files for VSCode.
-/// 
-/// This builder creates the main extension.ts file that bootstraps
-/// the VSCode extension and sets up the webview provider.
-class VSCodeExtensionGenerator implements Builder {
+class VscodeExtensionGenerator
+    extends GeneratorForAnnotation<VSCodeController> {
   @override
-  Map<String, List<String>> get buildExtensions => {
-        'lib/main.dart': ['src/extension.ts']
-      };
-
-  @override
-  Future<void> build(BuildStep buildStep) async {
-    final inputId = buildStep.inputId;
-    if (inputId.path != 'lib/main.dart') return;
-
-    try {
-      // We need to scan all files for controllers, but only generate once
-      // from main.dart
-      final output = await _generateExtension(buildStep);
-
-      if (output != null) {
-        final outputId = AssetId(inputId.package, 'src/extension.ts');
-        await buildStep.writeAsString(outputId, output);
-      }
-    } on Exception catch (e) {
-      print('Error generating extension: $e');
-    }
-  }
-
-  Future<String?> _generateExtension(BuildStep buildStep) async {
-    // Try to read project name from pubspec or directory
-    var projectName = 'myflutterextension';
-    try {
-      const pubspecPath = 'pubspec.yaml';
-      final file = File(pubspecPath);
-      if (file.existsSync()) {
-        final content = file.readAsStringSync();
-        final lines = content.split('\n');
-        for (final line in lines) {
-          if (line.startsWith('name:')) {
-            projectName = line.split(':')[1].trim();
-            break;
-          }
-        }
-      }
-    } on Exception {
-      // Use default if can't read pubspec
+  String generateForAnnotatedElement(
+    Element element,
+    ConstantReader annotation,
+    BuildStep buildStep,
+  ) {
+    if (element is! ClassElement) {
+      throw InvalidGenerationSourceError(
+        '@VSCodeController can only be used on classes.',
+        element: element,
+      );
     }
 
-    // Generate a generic Flutter webview extension structure
-    final buffer = StringBuffer()
-      ..writeln("import * as vscode from 'vscode';")
-      ..writeln("import * as path from 'path';")
-      ..writeln("import * as fs from 'fs';")
-      ..writeln()
-      ..writeln(
-        'export function activate(context: vscode.ExtensionContext) {',
-      )
-      ..writeln("    console.log('Flutter VSCode extension activated');")
-      ..writeln()
-      ..writeln(
-        '    const provider = new FlutterWebviewProvider(' 
-        'context.extensionUri);',
-      )
-      ..writeln()
-      ..writeln('    // Register the webview provider')
-      ..writeln('    context.subscriptions.push(')
-      ..writeln(
-        '        vscode.window.registerWebviewViewProvider(' 
-        'FlutterWebviewProvider.viewType, provider)',
-      )
-      ..writeln('    );')
-      ..writeln()
-      ..writeln('    // TODO: Register your custom commands here')
-      ..writeln('    // Example:')
-      ..writeln('    // context.subscriptions.push(vscode.commands.registerCommand("yourextension.command", () => {')
-      ..writeln('    //     if (provider.view) {')
-      ..writeln(
-        '    //         provider.view.webview.postMessage({ type: '
-        '"your-message" });',
-      )
-      ..writeln('    //     }')
-      ..writeln('    // }));')
-      ..writeln('}')
-      ..writeln()
-      ..writeln('export function deactivate() {')
-      ..writeln("    console.log('Flutter VSCode extension deactivated');")
-      ..writeln('}');
-
-    buffer.writeln(_getWebviewProviderClass(projectName));
-
-    return buffer.toString();
+    return _generateDart(element);
   }
 
-  String _getWebviewProviderClass(String projectName) {
-    final sanitizedName =
-        projectName.replaceAll(RegExp('[^a-zA-Z0-9]'), '').toLowerCase();
-    final viewId = '$sanitizedName.webview';
+  String _generateDart(ClassElement element) {
+    final className = element.name;
+    final commands = element.methods
+        .where((method) => method.isAbstract)
+        .map(_generateDartCommand)
+        .join('\n');
 
     return '''
+      // ignore_for_file: unused_import
 
-class FlutterWebviewProvider implements vscode.WebviewViewProvider {
-    public static readonly viewType = '$viewId';
+      import 'package:flutter_vscode/src/vscode_controller_base.dart';
+      import 'package:flutter_vscode/src/webview_bridge.dart';
 
-    public view?: vscode.WebviewView;
+      class $className extends VSCodeControllerBase {
+        $className(WebViewBridge bridge) : super(bridge);
 
-    constructor(
-        private readonly _extensionUri: vscode.Uri,
-    ) {}
+        $commands
+      }
+      ''';
+  }
 
-    public resolveWebviewView(
-        webviewView: vscode.WebviewView,
-        context: vscode.WebviewViewResolveContext,
-        _token: vscode.CancellationToken,
-    ) {
-        this.view = webviewView;
+  String _generateDartCommand(MethodElement method) {
+    final methodName = method.name;
+    final parameters = method.formalParameters
+        .map((param) => '${param.type.getDisplayString()} ${param.name}')
+        .join(', ');
+    final parameterNames = method.formalParameters
+        .map((param) => param.name)
+        .join(', ');
+    final returnType = method.returnType.isDartAsyncFuture
+        ? (method.returnType as InterfaceType).typeArguments[0]
+        : method.returnType;
 
-        // Configure the webview
-        webviewView.webview.options = {
-            enableScripts: true,
-            localResourceRoots: [
-                vscode.Uri.joinPath(this._extensionUri, 'build', 'web')
-            ]
-        };
-
-        // Set its HTML content
-        webviewView.webview.html = this._getHtml(webviewView.webview);
-
-        // Handle messages from the webview
-        webviewView.webview.onDidReceiveMessage(data => {
-            // TODO: Handle messages from your Flutter app
-            console.log('Received message from Flutter:', data);
-
-            // Example message handling:
-            // switch (data.type) {
-            //     case 'myCustomMessage':
-            //         vscode.window.showInformationMessage(`Flutter says: \${data.message}`);
-            //         break;
-            // }
-        });
-    }
-
-    private _getHtml(webview: vscode.Webview): string {
-        const webviewUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "build", "web"));
-
-        console.log('Loading Flutter app from:', webviewUri.toString());
-
-        // Read the built index.html file
-        const indexHtmlPath = path.join(this._extensionUri.fsPath, "build", "web", "index.html");
-        let indexHtml = '';
-        try {
-            indexHtml = fs.readFileSync(indexHtmlPath, 'utf8');
-            console.log('Successfully loaded Flutter app HTML');
-        } catch (error) {
-            console.error('Could not read build/web/index.html:', error);
-            return `<html><body><h1>Flutter App Not Found</h1><p>Please run 'flutter build web' first, then reload the extension.</p></body></html>`;
-        }
-
-        // Replace the base href with the webview URI
-        indexHtml = indexHtml.replace('<base href="/">', `<base href="\${webviewUri}/">`);
-
-        return indexHtml;
-    }
-}
-''';
+    return '''
+      Future<${returnType.getDisplayString()}>
+      $methodName($parameters) {
+        return sendCommand('$methodName', [$parameterNames], expectsResponse: true);
+      }
+      ''';
   }
 }

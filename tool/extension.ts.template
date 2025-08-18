@@ -61,6 +61,7 @@ class FlutterWebviewProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.onDidReceiveMessage(data => {
             switch (data.type) {
+                // {{commands}}
                 case 'resetCounter':
                     vscode.window.showInformationMessage(`Flutter app says: "Resetting counter." Old value was: ${data.value}`);
                     this._updateStatusBar(data.value || 0);

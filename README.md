@@ -4,35 +4,22 @@ A Flutter package that enables you to build VSCode extensions using Flutter for 
 
 ## Features
 
-- **Annotation-based code generation**: Use `@VSCodeController` and `@VSCodeCommand` annotations to automatically generate TypeScript extension code
-- **Flutter UI integration**: Build your extension's UI using Flutter widgets
-- **Bidirectional communication**: Seamless communication between Flutter (Dart) and VSCode (TypeScript)
-- **Extension scaffolding**: Automatic generation of VSCode extension project structure
-- **Webview compatibility**: Pre-configured for VSCode webview constraints and security policies
-- **Build automation**: Integrated build scripts for both Flutter and TypeScript compilation
+-   **Annotation-based code generation**: Use `@VSCodeController` and `@VSCodeCommand` annotations to automatically generate TypeScript extension code.
+-   **Flutter UI integration**: Build your extension's UI using Flutter widgets.
+-   **Bidirectional communication**: Seamless communication between Flutter (Dart) and VSCode (TypeScript).
+-   **Extension scaffolding**: Automatic generation of VSCode extension project structure.
+-   **Webview compatibility**: Pre-configured for VSCode webview constraints and security policies.
+-   **Build automation**: Integrated build scripts for both Flutter and TypeScript compilation.
 
 ## Getting started
 
 ### Prerequisites
 
-- **Flutter SDK**: Install from [flutter.dev](https://flutter.dev/docs/get-started/install)
-- **Dart SDK**: Included with Flutter
-- **Node.js**: Install the latest stable version from [nodejs.org](https://nodejs.org/)
-- **VSCode**: For extension development and testing
+-   **Flutter SDK**: Install from [flutter.dev](https://flutter.dev/docs/get-started/install)
+-   **Dart SDK**: Included with Flutter
+-   **Node.js**: Install the latest stable version from [nodejs.org](https://nodejs.org/)
+-   **VSCode**: For extension development and testing
 
-### Installation
-
-1. Add this package to your `pubspec.yaml`:
-
-```yaml
-dependencies:
-  flutter_vscode: ^0.1.0
-
-dev_dependencies:
-  build_runner: ^2.3.0
-```
-
-2. Run `flutter pub get`
 
 ## Usage
 
@@ -45,21 +32,33 @@ flutter create --platforms web your_extension_name
 cd your_extension_name
 ```
 
+Then, add these packages to your `pubspec.yaml`:
+
+  ```yaml
+  dependencies:
+    flutter_vscode: ^0.1.0
+
+  dev_dependencies:
+    build_runner: ^2.3.0
+  ```
+
+Run `flutter pub get`
+
 Then generate the VSCode extension project structure:
 
 ```bash
-dart run flutter_vscode:generate_vscode_extension
+dart run flutter_vscode:init
 ```
 
-This creates:
-- VSCode extension configuration (`package.json`, `launch.json`)
-- TypeScript setup (`tsconfig.json`, `src/extension.ts`)
-- Flutter web configuration (`web/` directory with webview-compatible setup)
-- Build scripts and `.gitignore`
+This command will create:
+-   VSCode extension configuration (`package.json`, `tsconfig.json`)
+-   TypeScript setup (`src/extension.ts`)
+-   Flutter web configuration (`web/` directory with webview-compatible setup)
+-   Build scripts (`scripts/compile.sh`) and `.gitignore`
 
 ### 2. Define Your Extension Logic
 
-Create a controller class with annotations:
+Create a controller class with annotations (e.g., `lib/my_extension_controller.dart`):
 
 ```dart
 import 'package:flutter_vscode/flutter_vscode.dart';
@@ -71,10 +70,10 @@ part 'my_extension_controller.g.dart';
 abstract class MyExtensionController {
   @VSCodeCommand()
   void sayHello(String name);
-  
+
   @VSCodeCommand()
   Future<String> openPanel();
-  
+
   @VSCodeCommand()
   void updateStatusBar(int count);
 }
@@ -82,7 +81,7 @@ abstract class MyExtensionController {
 
 ### 3. Build Your Flutter UI
 
-Create your Flutter app that uses the generated controller:
+Create your Flutter app that uses the generated controller (e.g., `lib/main.dart`):
 
 ```dart
 import 'package:flutter/material.dart';
@@ -94,7 +93,7 @@ void main() {
 
 class MyExtensionApp extends StatelessWidget {
   const MyExtensionApp({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -106,7 +105,7 @@ class MyExtensionApp extends StatelessWidget {
 
 class ExtensionPanel extends StatefulWidget {
   const ExtensionPanel({super.key});
-  
+
   @override
   State<ExtensionPanel> createState() => _ExtensionPanelState();
 }
@@ -114,19 +113,19 @@ class ExtensionPanel extends StatefulWidget {
 class _ExtensionPanelState extends State<ExtensionPanel> {
   late MyExtensionController _controller;
   int _counter = 0;
-  
+
   @override
   void initState() {
     super.initState();
     // Use the generated factory method to create controller instance
     _controller = MyExtensionControllerFactory.create();
   }
-  
+
   void _incrementCounter() {
     setState(() {
       _counter++;
     });
-    
+
     // Communicate with VSCode extension
     try {
       _controller.updateStatusBar(_counter);
@@ -134,7 +133,7 @@ class _ExtensionPanelState extends State<ExtensionPanel> {
       debugPrint('Could not update VSCode status bar: $e');
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -163,42 +162,30 @@ class _ExtensionPanelState extends State<ExtensionPanel> {
 }
 ```
 
-### 4. Generate Extension Code
+### 4. Build and Test
 
-Run code generation to create TypeScript extension handlers:
-
-```bash
-dart run build_runner build
-```
-
-### 5. Build and Test
-
-```bash
-# Install Node.js dependencies
-npm install
-
-# Build everything (Dart, TypeScript, Flutter web)
-npm run compile
-
-# Test in VSCode
-# Press F5 in VSCode to launch extension development host
-```
+1.  Run `npm install` to install TypeScript dependencies.
+2.  Run `npm run compile` to build everything (Dart code generation, TypeScript compilation, Flutter web build).
+3.  Open VS Code and press F5 to launch the extension development host.
 
 ## Project Structure
 
-After running the generator, your project will have:
+After running `dart run flutter_vscode:init`, your project will have:
 
 ```
 ├── .vscode/
-│   └── launch.json          # VSCode debug configuration
+│   └── launch.json          # VSCode debug configuration (generated by VSCode)
 ├── lib/
 │   └── main.dart           # Your Flutter app
+│   └── my_extension_controller.dart # Your extension logic
+│   └── my_extension_controller.g.dart # Generated Dart code
 ├── src/
 │   └── extension.ts        # TypeScript extension entry point
+│   └── my_extension_controller.handlers.ts # Generated TypeScript handlers
 ├── web/
 │   ├── index.html          # Webview-compatible HTML
-│   ├── flutter_bootstrap.js # Flutter web bootstrap
-│   └── manifest.json       # Web app manifest
+│   ├── flutter_bootstrap.js # Flutter web bootstrap (generated)
+│   └── manifest.json       # Web app manifest (generated by Flutter)
 ├── scripts/
 │   └── compile.sh          # Build automation script
 ├── package.json            # VSCode extension configuration
@@ -209,26 +196,27 @@ After running the generator, your project will have:
 ## Generated Files
 
 The build process automatically generates:
-- `*.handlers.ts` - TypeScript command handlers from your Dart annotations
-- `*.g.dart` - Dart implementation classes for your controllers
-- Webview registration code in `extension.ts`
+-   `*.handlers.ts` - TypeScript command handlers from your Dart annotations (output to `src/`)
+-   `*.g.dart` - Dart implementation classes for your controllers
+-   `flutter_bootstrap.js` - Webview communication bridge
+-   Modified `web/index.html` (after `compile.sh` moves `index.html.temp`)
 
 ## Additional Information
 
 ### Webview Constraints
 
 This package handles VSCode webview limitations:
-- Content Security Policy (CSP) compliance
-- Local resource loading restrictions
-- History API compatibility
-- Remote resource blocking
+-   Content Security Policy (CSP) compliance
+-   Local resource loading restrictions
+-   History API compatibility
+-   Remote resource blocking
 
 ### Build Integration
 
-The generated `compile.sh` script handles:
-1. Dart code generation with `build_runner`
-2. TypeScript compilation
-3. Flutter web build with webview-specific flags
+The `scripts/compile.sh` script handles:
+1.  Dart code generation with `build_runner`
+2.  Moving `web/index.html.temp` to `web/index.html`
+3.  Flutter web build with webview-specific flags (`--no-web-resources-cdn --csp `) - these are necessary to comply with extension rules on external code
 
 ### Contributing
 
@@ -237,11 +225,11 @@ Contributions are welcome! Please see our [contributing guidelines](CONTRIBUTING
 ### Troubleshooting
 
 If you encounter issues:
-- Ensure your `pubspec.yaml` has the correct dependencies
-- Run `flutter pub get` to get latest dependencies
-- Check for typos in your `part` declarations
-- Validate VSCode and Flutter logs for hints
-- Ensure Node.js is installed and npm dependencies are resolved
+-   Ensure your `pubspec.yaml` has the correct dependencies.
+-   Run `flutter pub get` to get latest dependencies.
+-   Check for typos in your `part` declarations.
+-   Validate VSCode and Flutter logs for hints.
+-   Ensure Node.js is installed and npm dependencies are resolved.
 
 ### Issues
 
