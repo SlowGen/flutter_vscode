@@ -22,8 +22,7 @@ export function handleCommand(message: any, panel: vscode.WebviewPanel): void {
             requestId: message.requestId,
             result
           });
-        })
-        .catch(error => {
+        }, error => {
           panel.webview.postMessage({
             requestId: message.requestId,
             error: error.message || String(error)
@@ -33,14 +32,13 @@ export function handleCommand(message: any, panel: vscode.WebviewPanel): void {
     }
 
     case 'getUserName': {
-      vscode.commands.executeCommand('getUserName', )
+      vscode.commands.executeCommand('getUserName')
         .then(result => {
           panel.webview.postMessage({
             requestId: message.requestId,
             result
           });
-        })
-        .catch(error => {
+        }, error => {
           panel.webview.postMessage({
             requestId: message.requestId,
             error: error.message || String(error)
@@ -51,9 +49,9 @@ export function handleCommand(message: any, panel: vscode.WebviewPanel): void {
 
     case 'showInformationMessage': {
       const {
-        message,
+        message: messageParam,
       } = message.params || {};
-      vscode.commands.executeCommand('my-extension.showInfo', message);
+      vscode.commands.executeCommand('my-extension.showInfo', messageParam);
       break;
     }
 

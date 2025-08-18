@@ -16,7 +16,11 @@ import 'package:source_gen/source_gen.dart';
 class VSCodeTsGenerator implements Builder {
   @override
   Map<String, List<String>> get buildExtensions => {
-    'lib/{{}}.dart': ['src/generated/{{}}.handlers.ts'],
+    r'^lib/{{dir}}/{{file}}.dart': [
+      'src/generated/api_controller.handlers.ts',
+      'src/generated/subscriptions.ts',
+      'src/generated/api_controller.ts',
+    ],
   };
 
   // Keep track of all generated files for the barrel export
@@ -50,6 +54,10 @@ class VSCodeTsGenerator implements Builder {
         // Track generated files for future use
         _generatedFiles.add(p.basename(handlerOutputId.path));
         _customCommands.addAll(result.customCommands);
+        
+        // Generate barrel file and subscriptions file
+        await _generateBarrelFile(buildStep);
+        await _generateSubscriptionsFile(buildStep, _customCommands);
       }
     } on Exception catch (e) {
       // Skip files that can't be processed as libraries
@@ -174,11 +182,15 @@ class VSCodeTsGenerator implements Builder {
 
     final buffer = StringBuffer()..writeln("    case '$methodName': {");
 
-    // Generate parameter extraction
+    // Generate parameter extraction (avoid naming conflicts)
     if (parameters.isNotEmpty) {
       buffer.writeln('      const {');
       for (final param in parameters) {
-        buffer.writeln('        ${param.name},');
+        if (param.name == 'message') {
+          buffer.writeln('        message: messageParam,');
+        } else {
+          buffer.writeln('        ${param.name},');
+        }
       }
       buffer.writeln('      } = message.params || {};');
     }
@@ -193,57 +205,111 @@ class VSCodeTsGenerator implements Builder {
 
     if (isVSCodeCommand) {
       // Built-in VS Code command
-      final args = parameters.map((p) => p.name).join(', ');
-      final argsParam = parameters.isNotEmpty ? ', $args' : '';
-
-      if (hasReturnValue) {
-        buffer
-          ..writeln(
-            "      vscode.commands.executeCommand('$finalCommandName'$argsParam)",
-          )
-          ..writeln('        .then(result => {')
-          ..writeln('          panel.webview.postMessage({')
-          ..writeln('            requestId: message.requestId,')
-          ..writeln('            result')
-          ..writeln('          });')
-          ..writeln('        })')
-          ..writeln('        .catch(error => {')
-          ..writeln('          panel.webview.postMessage({')
-          ..writeln('            requestId: message.requestId,')
-          ..writeln('            error: error.message || String(error)')
-          ..writeln('          });')
-          ..writeln('        });');
+      if (parameters.isNotEmpty) {
+        final args = parameters
+            .map((p) {
+              // Handle renamed parameters for naming conflict avoidance
+              return p.name == 'message' ? 'messageParam' : p.name;
+            })
+            .join(', ');
+        if (hasReturnValue) {
+          buffer
+            ..writeln(
+              "      vscode.commands.executeCommand('$finalCommandName', $args)",
+            )
+            ..writeln('        .then(result => {')
+            ..writeln('          panel.webview.postMessage({')
+            ..writeln('            requestId: message.requestId,')
+            ..writeln('            result')
+            ..writeln('          });')
+            ..writeln('        }, error => {')
+            ..writeln('          panel.webview.postMessage({')
+            ..writeln('            requestId: message.requestId,')
+            ..writeln('            error: error.message || String(error)')
+            ..writeln('          });')
+            ..writeln('        });');
+        } else {
+          buffer.writeln(
+            "      vscode.commands.executeCommand('$finalCommandName', $args);",
+          );
+        }
       } else {
-        buffer.writeln(
-          "      vscode.commands.executeCommand('$finalCommandName'$argsParam);",
-        );
+        // No parameters
+        if (hasReturnValue) {
+          buffer
+            ..writeln(
+              "      vscode.commands.executeCommand('$finalCommandName')",
+            )
+            ..writeln('        .then(result => {')
+            ..writeln('          panel.webview.postMessage({')
+            ..writeln('            requestId: message.requestId,')
+            ..writeln('            result')
+            ..writeln('          });')
+            ..writeln('        }, error => {')
+            ..writeln('          panel.webview.postMessage({')
+            ..writeln('            requestId: message.requestId,')
+            ..writeln('            error: error.message || String(error)')
+            ..writeln('          });')
+            ..writeln('        });');
+        } else {
+          buffer.writeln(
+            "      vscode.commands.executeCommand('$finalCommandName');",
+          );
+        }
       }
     } else {
       // Custom command
-      final args = parameters.map((p) => p.name).join(', ');
-      final argsParam = parameters.isNotEmpty ? args : '';
-
-      if (hasReturnValue) {
-        buffer
-          ..writeln(
-            "      vscode.commands.executeCommand('$finalCommandName', $argsParam)",
-          )
-          ..writeln('        .then(result => {')
-          ..writeln('          panel.webview.postMessage({')
-          ..writeln('            requestId: message.requestId,')
-          ..writeln('            result')
-          ..writeln('          });')
-          ..writeln('        })')
-          ..writeln('        .catch(error => {')
-          ..writeln('          panel.webview.postMessage({')
-          ..writeln('            requestId: message.requestId,')
-          ..writeln('            error: error.message || String(error)')
-          ..writeln('          });')
-          ..writeln('        });');
+      if (parameters.isNotEmpty) {
+        final args = parameters
+            .map((p) {
+              // Handle renamed parameters for naming conflict avoidance
+              return p.name == 'message' ? 'messageParam' : p.name;
+            })
+            .join(', ');
+        if (hasReturnValue) {
+          buffer
+            ..writeln(
+              "      vscode.commands.executeCommand('$finalCommandName', $args)",
+            )
+            ..writeln('        .then(result => {')
+            ..writeln('          panel.webview.postMessage({')
+            ..writeln('            requestId: message.requestId,')
+            ..writeln('            result')
+            ..writeln('          });')
+            ..writeln('        }, error => {')
+            ..writeln('          panel.webview.postMessage({')
+            ..writeln('            requestId: message.requestId,')
+            ..writeln('            error: error.message || String(error)')
+            ..writeln('          });')
+            ..writeln('        });');
+        } else {
+          buffer.writeln(
+            "      vscode.commands.executeCommand('$finalCommandName', $args);",
+          );
+        }
       } else {
-        buffer.writeln(
-          "      vscode.commands.executeCommand('$finalCommandName', $argsParam);",
-        );
+        // No parameters
+        if (hasReturnValue) {
+          buffer
+            ..writeln(
+              "      vscode.commands.executeCommand('$finalCommandName')",
+            )
+            ..writeln('        .then(result => {')
+            ..writeln('          panel.webview.postMessage({')
+            ..writeln('            requestId: message.requestId,')
+            ..writeln('            result')
+            ..writeln('          });')
+            ..writeln('        }, error => {')
+            ..writeln('          panel.webview.postMessage({')
+            ..writeln('            requestId: message.requestId,')
+            ..writeln('            error: error.message || String(error)')
+            ..writeln('          });')
+            ..writeln('        });');
+        } else {
+          buffer.writeln(
+            "      vscode.commands.executeCommand('$finalCommandName');",
+          );
+        }
       }
     }
 
@@ -259,6 +325,11 @@ class VSCodeTsGenerator implements Builder {
   }
 
   Future<void> _generateBarrelFile(BuildStep buildStep) async {
+    final barrelId = AssetId(
+      buildStep.inputId.package,
+      'src/generated/api_controller.ts',
+    );
+    
     final buffer = StringBuffer()
       ..writeln('// Generated barrel file for all VS Code command handlers')
       ..writeln("import * as vscode from 'vscode';")
@@ -303,11 +374,12 @@ class VSCodeTsGenerator implements Builder {
     buffer.writeln('}');
 
     // Write the barrel file
-    final barrelId = AssetId(
-      buildStep.inputId.package,
-      'src/generated/api_controller.ts',
-    );
-    await buildStep.writeAsString(barrelId, buffer.toString());
+    try {
+      await buildStep.writeAsString(barrelId, buffer.toString());
+    } catch (e) {
+      // If we can't write it, just log it
+      log.info('Cannot write barrel file: $e');
+    }
   }
 
   Future<void> _generateSubscriptionsFile(
@@ -316,6 +388,11 @@ class VSCodeTsGenerator implements Builder {
   ) async {
     if (customCommands.isEmpty) return;
 
+    final subscriptionsId = AssetId(
+      buildStep.inputId.package,
+      'src/generated/subscriptions.ts',
+    );
+    
     final buffer = StringBuffer()
       ..writeln("import * as vscode from 'vscode';")
       ..writeln()
@@ -356,11 +433,12 @@ class VSCodeTsGenerator implements Builder {
       ..writeln('}');
 
     // Write the subscriptions file
-    final subscriptionsId = AssetId(
-      buildStep.inputId.package,
-      'src/generated/subscriptions.ts',
-    );
-    await buildStep.writeAsString(subscriptionsId, buffer.toString());
+    try {
+      await buildStep.writeAsString(subscriptionsId, buffer.toString());
+    } catch (e) {
+      // If we can't write it, just log it
+      log.info('Cannot write subscriptions file: $e');
+    }
   }
 
   String _snakeCase(String input) {
