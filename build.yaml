@@ -11,7 +11,9 @@ builders:
     import: "package:flutter_vscode/builder.dart"
     builder_factories: ["vscodeTsGenerator"]
     build_extensions:
-      ^lib/{{}}.dart:
-        - "src/generated/{{}}.handlers.ts"
+      ^lib/{{dir}}/{{file}}.dart:
+        - "src/generated/api_controller.handlers.ts"
+        - "src/generated/subscriptions.ts"
+        - "src/generated/api_controller.ts"
     auto_apply: dependents
     build_to: source

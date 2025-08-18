@@ -16,7 +16,7 @@ import 'package:source_gen/source_gen.dart';
 class VSCodeTsGenerator implements Builder {
   @override
   Map<String, List<String>> get buildExtensions => {
-    '.dart': ['.handlers.ts'],
+    'lib/{{}}.dart': ['src/generated/{{}}.handlers.ts'],
   };
 
   // Keep track of all generated files for the barrel export
@@ -40,16 +40,16 @@ class VSCodeTsGenerator implements Builder {
       final result = await _generate(library, buildStep);
 
       if (result != null) {
-        // Generate TypeScript file alongside the dart file (as expected by build_runner)
         final baseName = p.basenameWithoutExtension(inputId.path);
-        final fileName = '${_snakeCase(baseName)}.handlers.ts';
-        final outputId = inputId.changeExtension('.handlers.ts');
-        await buildStep.writeAsString(outputId, result.handlerContent);
-        
-        // Generate subscriptions file with custom commands
-        if (result.customCommands.isNotEmpty) {
-          await _generateSubscriptionsFile(buildStep, result.customCommands);
-        }
+        final handlerOutputId = AssetId(
+          inputId.package,
+          'src/generated/${_snakeCase(baseName)}.handlers.ts',
+        );
+        await buildStep.writeAsString(handlerOutputId, result.handlerContent);
+
+        // Track generated files for future use
+        _generatedFiles.add(p.basename(handlerOutputId.path));
+        _customCommands.addAll(result.customCommands);
       }
     } on Exception catch (e) {
       // Skip files that can't be processed as libraries
@@ -309,13 +309,13 @@ class VSCodeTsGenerator implements Builder {
     );
     await buildStep.writeAsString(barrelId, buffer.toString());
   }
-  
+
   Future<void> _generateSubscriptionsFile(
     BuildStep buildStep,
     Set<String> customCommands,
   ) async {
     if (customCommands.isEmpty) return;
-    
+
     final buffer = StringBuffer()
       ..writeln("import * as vscode from 'vscode';")
       ..writeln()
@@ -327,32 +327,38 @@ class VSCodeTsGenerator implements Builder {
       ..writeln(') {')
       ..writeln('  // Register custom commands')
       ..writeln('  const disposables = [');
-    
+
     for (final command in customCommands) {
       buffer
-        ..writeln("    vscode.commands.registerCommand('$command', (...args) => {")
+        ..writeln(
+          "    vscode.commands.registerCommand('$command', (...args) => {",
+        )
         ..writeln('      // Custom command implementation')
         ..writeln('      // You can implement your command logic here')
-        ..writeln('      console.log(`Executing custom command: $command`, args);')
+        ..writeln(
+          '      console.log(`Executing custom command: $command`, args);',
+        )
         ..writeln('      return Promise.resolve();')
         ..writeln('    }),');
     }
-    
+
     buffer
       ..writeln('  ];')
       ..writeln()
       ..writeln('  // Add all disposables to extension context')
       ..writeln('  context.subscriptions.push(...disposables);')
       ..writeln()
-      ..writeln('  console.log(`Registered ${customCommands.length} custom commands:`, [')
+      ..writeln(
+        '  console.log(`Registered ${customCommands.length} custom commands:`, [',
+      )
       ..writeln('    ${customCommands.map((cmd) => "'$cmd'").join(', ')}')
       ..writeln('  ]);')
       ..writeln('}');
-    
+
     // Write the subscriptions file
     final subscriptionsId = AssetId(
       buildStep.inputId.package,
-      'src/subscriptions.ts',
+      'src/generated/subscriptions.ts',
     );
     await buildStep.writeAsString(subscriptionsId, buffer.toString());
   }
