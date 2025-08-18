@@ -1,3 +1,4 @@
+const String tsconfigTemplate = '''
 {
   "compilerOptions": {
     "module": "commonjs",
@@ -14,3 +15,4 @@
     "types": ["node"]
   }
 }
+''';

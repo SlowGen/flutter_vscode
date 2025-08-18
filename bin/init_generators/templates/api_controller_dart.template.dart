@@ -1,3 +1,4 @@
+const String apiControllerTemplate = '''
 import 'package:flutter_vscode/annotations.dart';
 
 part 'api_controller.vscode.g.dart';
@@ -20,3 +21,4 @@ abstract class ApiController {
   @VSCodeCommand('my-extension.showInfo')
   Future<void> showInformationMessage(String message);
 }
+''';

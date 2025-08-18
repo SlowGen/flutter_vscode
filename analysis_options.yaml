@@ -1,4 +1,22 @@
-include: package:flutter_lints/flutter.yaml
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  errors:
+    missing_whitespace_between_adjacent_strings: ignore
+  exclude:
+    - example/**
+
+linter:
+  rules:
+    avoid_print: false
+    missing_whitespace_between_adjacent_strings: false
+    cascade_invocations: false
+    avoid_single_cascade_in_expression_statements: false
+    lines_longer_than_80_chars: false
+# temporary - should be added back before publishing
+    public_member_api_docs: false
+    avoid_catches_without_on_clauses: false
+
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

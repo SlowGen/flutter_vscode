@@ -1,3 +1,4 @@
+const String webIndexTemplate = '''
 <!DOCTYPE html>
 <html>
 <head>
@@ -35,3 +36,4 @@
   <script src="main.dart.js"></script>
 </body>
 </html>
+''';

@@ -1,22 +1,19 @@
-targets:
-  $default:
-    builders:
-      flutter_vscode|vscode_dart:
-        enabled: true
-      flutter_vscode|vscode_ts:
-        enabled: true
-
 builders:
-  vscode_dart:
+  vscode_extension_generator:
     import: "package:flutter_vscode/builder.dart"
-    builder_factories: ["vscodeDartGenerator"]
-    build_extensions: {".dart": [".vscode.g.part"]}
+    builder_factories: ["vscodeExtensionGenerator"]
+    build_extensions:
+      .dart:
+        - ".vscode.g.dart"
     auto_apply: dependents
     build_to: source
-    applies_builders: ["source_gen|combining_builder"]
-  vscode_ts:
+  vscode_ts_generator:
     import: "package:flutter_vscode/builder.dart"
     builder_factories: ["vscodeTsGenerator"]
-    build_extensions: {".dart": [".handlers.ts"]}
+    build_extensions:
+      ^lib/{{dir}}/{{file}}.dart:
+        - "src/generated/api_controller.handlers.ts"
+        - "src/generated/subscriptions.ts"
+        - "src/generated/api_controller.ts"
     auto_apply: dependents
     build_to: source

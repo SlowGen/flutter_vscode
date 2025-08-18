@@ -1,0 +1,81 @@
+Your project aims to provide a streamlined, low-friction experience for developers building VS Code extensions with a Flutter UI. The core challenge is to automate the translation of Flutter's Dart code into the necessary TypeScript files for the VS Code extension host. This requires a robust code generation process that respects the existing architecture and integrates seamlessly with the user's workflow.
+
+The following is a detailed prompt designed to guide a developer in fixing and extending the existing package. It breaks down the requirements into clear, actionable steps and provides the necessary context.
+
+-----
+
+## **Prompt: Enhancing a Flutter VS Code Extension Package**
+
+### **Overview**
+
+Your task is to fix and improve a Flutter package designed to help developers create VS Code extensions with a Flutter webview as the UI. The primary goal is to provide a seamless, code-generation-based workflow for handling communication between the Flutter UI and the VS Code extension host.
+
+The package currently has a working setup script and a `WebviewMessageHandler` class. The core problem is that the automated code generation process for the TypeScript side is incomplete and needs to be implemented. The developer should be able to define their extension's functionality by creating annotated Dart classes, and the package's build process should automatically generate the corresponding TypeScript message handlers.
+
+### **Requirements**
+
+The following is a list of specific requirements for the project.
+
+#### **1. Automated Code Generation**
+
+The build process must automatically generate all necessary Dart and TypeScript files. This process is triggered by `build_runner` and is part of the existing `compile.sh` script.
+
+  * **Dart Side:** Implement a build step that generates a Dart file for each annotated controller class. This file should contain the necessary boilerplate for calling the `WebviewMessageHandler` to send messages to the VS Code extension host.
+  * **TypeScript Side:** Implement a build step that generates a TypeScript file for each annotated controller class. These files will contain the command handlers that execute a specific VS Code command or custom function.
+
+#### **2. File Structure and Naming**
+
+The generated files must adhere to a specific structure to ensure proper integration with the VS Code extension.
+
+  * **Generated Folder:** All generated TypeScript files must be placed in a dedicated folder inside the user's `out` directory. This folder should be named `api`.
+  * **Barreled File:** Within the `out/api` folder, a single file named `api_controller.ts` must be created. This file will "barrel" all the other generated `.ts` files, making them easily importable.
+  * **Barrel Logic:** The `api_controller.ts` file should be a single source of truth for all generated files. The `extension.ts` file should only need to import this one barrel file, not the individual generated files.
+
+#### **3. Annotation-Based Functionality**
+
+The core of the package's usability relies on annotations to declare functionality.
+
+  * **Annotated Controllers:** The developer will create Dart classes annotated with `@VsCodeController` (or a similar name).
+  * **Method Annotations:** Inside these controller classes, methods will be annotated with `@VsCodeCommand` (or similar). This annotation will take a string parameter representing the VS Code command ID or a custom command name.
+  * **Example Usage:** A developer should be able to write a Dart class like this:
+
+<!-- end list -->
+
+```dart
+// The user's annotated file
+@VsCodeController()
+class MyExtensionController {
+
+  @VsCodeCommand('vscode.open')
+  void openFile(String path) {
+    // This method will be triggered by a message from the extension host
+  }
+
+  @VsCodeCommand('my-extension.sayHello')
+  String sayHello(String name) {
+    return 'Hello, $name!';
+  }
+}
+```
+
+  * **Matching Generation:** For the `MyExtensionController` class above, the build process must generate the following:
+      * A corresponding Dart file with boilerplate code for message-passing.
+
+      * A TypeScript file (`my_extension_controller.ts`) inside the `out/api` folder with two functions, one for each annotated method. These functions should handle the message, and if a value is returned, pass it back to the Flutter UI.
+
+        The TypeScript code for the `openFile` command should execute `vscode.commands.executeCommand('vscode.open', path);`.
+        The TypeScript code for the `sayHello` command should define a custom handler that returns the appropriate value.
+
+#### **4. API Integration**
+
+The generated TypeScript code must correctly interface with the VS Code API.
+
+  * **VS Code Commands:** For methods annotated with a built-in VS Code command, the generated TypeScript code should use `vscode.commands.executeCommand()` to execute that command.
+  * **Custom Commands:** For custom commands, the generated TypeScript code should register a command handler using `vscode.commands.registerCommand()`. This ensures the command is available to the extension host.
+  * **WebviewMessageHandler:** The generated code should utilize the existing, working `WebviewMessageHandler` to send and receive messages from the Flutter UI.
+
+### **What to Deliver**
+
+  * **Updated Code:** Deliver the modified Dart package with the implemented code generation logic.
+  * **Code Documentation:** Provide clear, concise comments within the code explaining the purpose of each generated file and the logic behind the build steps.
+  * **Testing:** Demonstrate that the process works by providing a simple example with an annotated controller and showing that the corresponding Dart and TypeScript files are correctly generated and the communication is functional.

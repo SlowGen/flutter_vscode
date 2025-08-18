@@ -1,3 +1,4 @@
+const String packageJsonTemplate = '''
 {
   "name": "flutter-vscode-extension",
   "displayName": "Flutter VS Code Extension",
@@ -33,3 +34,4 @@
     "mocha": "^10.0.0"
   }
 }
+''';

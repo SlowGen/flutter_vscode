@@ -1,0 +1,11 @@
+export 'api_controller_dart.template.dart';
+export 'barrel_ts.template.dart';
+export 'command_handler_ts.template.dart';
+export 'compile_sh.template.dart';
+export 'extension_ts.template.dart';
+export 'flutter_bootstrap_js.template.dart';
+export 'helpers_ts.template.dart';
+export 'index_html.template.dart';
+export 'package_json.template.dart';
+export 'subscriptions_ts.template.dart';
+export 'tsconfig_js.template.dart';
