@@ -1,0 +1,39 @@
+const String webIndexTemplate = '''
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flutter VS Code Extension</title>
+    <script>
+    // Disable history API for webview compatibility
+    (function() {
+      function initializeHistoryAPI() {
+        if (typeof window !== 'undefined' && window.history) {
+          window.history.replaceState = function() {
+            console.log('History replaceState blocked for webview compatibility');
+          };
+          window.history.pushState = function() {
+            console.log('History pushState blocked for webview compatibility');
+          };
+        } else {
+          // Retry after a short delay if window is not available yet
+          setTimeout(initializeHistoryAPI, 10);
+        }
+      }
+
+      // Initialize immediately or when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeHistoryAPI);
+      } else {
+        initializeHistoryAPI();
+      }
+    })();
+  </script>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <script src="main.dart.js"></script>
+</body>
+</html>
+''';
