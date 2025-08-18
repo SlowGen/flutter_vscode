@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { getProjectName } from './helpers';
-import { subscribeToGeneratedContent } from './subscription_handler';
+import { subscribeToGeneratedContent } from './generated/subscriptions';
 
 const projectName = getProjectName();
 

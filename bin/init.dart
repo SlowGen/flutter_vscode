@@ -22,6 +22,7 @@ void main(List<String> arguments) async {
     setupWeb(currentDir);
     await setupShell(currentDir);
     updateGitignore();
+    createExample(currentDir);
   } catch (e) {
     print('Failed to complete setup: $e');
     exit(1);

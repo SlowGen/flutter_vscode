@@ -3,33 +3,15 @@ builders:
     import: "package:flutter_vscode/builder.dart"
     builder_factories: ["vscodeExtensionGenerator"]
     build_extensions:
-      .dart: 
+      .dart:
         - ".vscode.g.dart"
-        - ".vscode.extension.ts"
     auto_apply: dependents
     build_to: source
   vscode_ts_generator:
-    import: "package:flutter_vscode/src/vscode_ts_generator.dart"
+    import: "package:flutter_vscode/builder.dart"
     builder_factories: ["vscodeTsGenerator"]
     build_extensions:
-      .dart: 
-        - ".handlers.ts"
-    auto_apply: dependents
-    build_to: source
-  webview_builder:
-    import: "package:flutter_vscode/src/webview_builder.dart"
-    builder_factories: ["webviewBuilder"]
-    build_extensions:
-      web/index.html: 
-        - "web/index.html.temp"
-        - "web/flutter_bootstrapper.js"
-    auto_apply: dependents
-    build_to: source
-  package_json_builder:
-    import: "package:flutter_vscode/src/package_json_builder.dart"
-    builder_factories: ["packageJsonBuilder"]
-    build_extensions:
-      $lib$: 
-        - "package.json"
+      ^lib/{{}}.dart:
+        - "src/generated/{{}}.handlers.ts"
     auto_apply: dependents
     build_to: source

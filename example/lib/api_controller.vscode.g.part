@@ -5,17 +5,26 @@
 // ignore_for_file: unused_import
 
 import 'package:flutter_vscode/src/vscode_controller_base.dart';
-import 'package:flutter_vscode/src/webview_bridge.dart';
+import 'package:flutter_vscode/src/vscode_interop.dart';
 
 class ApiController extends VSCodeControllerBase {
-  ApiController(WebViewBridge bridge) : super(bridge);
+  ApiController(WebviewMessageHandler handler) : super(handler);
+
+  Future<void> openFile(String path) {
+    return sendCommand('openFile', [path], expectsResponse: true);
+  }
+
+  Future<String> sayHello(String name) {
+    return sendCommand('sayHello', [name], expectsResponse: true);
+  }
 
   Future<String> getUserName() {
     return sendCommand('getUserName', [], expectsResponse: true);
   }
 
   Future<void> showInformationMessage(String message) {
-    return sendCommand('showInformationMessage', [message],
-        expectsResponse: true);
+    return sendCommand('showInformationMessage', [
+      message,
+    ], expectsResponse: true);
   }
 }

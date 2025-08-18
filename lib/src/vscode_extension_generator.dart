@@ -33,10 +33,10 @@ class VscodeExtensionGenerator
       // ignore_for_file: unused_import
 
       import 'package:flutter_vscode/src/vscode_controller_base.dart';
-      import 'package:flutter_vscode/src/webview_bridge.dart';
+      import 'package:flutter_vscode/src/vscode_interop.dart';
 
       class $className extends VSCodeControllerBase {
-        $className(WebViewBridge bridge) : super(bridge);
+        $className(WebviewMessageHandler handler) : super(handler);
 
         $commands
       }

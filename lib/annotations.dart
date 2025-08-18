@@ -16,5 +16,12 @@ class VSCodeController {
 /// annotated with [VSCodeController].
 class VSCodeCommand {
   /// Creates a new VSCode command annotation.
-  const VSCodeCommand();
+  /// 
+  /// [command] is the VS Code command ID to execute (e.g., 'vscode.open')
+  /// or a custom command name (e.g., 'my-extension.sayHello').
+  /// If not provided, the method name will be used as the command name.
+  const VSCodeCommand([this.command]);
+  
+  /// The command ID to execute in VS Code.
+  final String? command;
 }

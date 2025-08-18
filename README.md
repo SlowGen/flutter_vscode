@@ -56,81 +56,119 @@ This command will create:
 -   Flutter web configuration (`web/` directory with webview-compatible setup)
 -   Build scripts (`scripts/compile.sh`) and `.gitignore`
 
-### 2. Define Your Extension Logic
+### 2. Examine the Generated Extension Logic
 
-Create a controller class with annotations (e.g., `lib/my_extension_controller.dart`):
+The `dart run flutter_vscode:init` command creates an example controller class at `lib/api_controller.dart`:
+
+Don't panic when you see the red! That is for the yet to be generated code. This will go away when you run build_runner
 
 ```dart
-import 'package:flutter_vscode/flutter_vscode.dart';
+import 'package:flutter_vscode/annotations.dart';
 
-// IMPORTANT: Add this part directive for code generation
-part 'my_extension_controller.g.dart';
+part 'api_controller.vscode.g.dart';
 
 @VSCodeController()
-abstract class MyExtensionController {
-  @VSCodeCommand()
-  void sayHello(String name);
+abstract class ApiController {
+  // Example of built-in VS Code command
+  @VSCodeCommand('vscode.open')
+  Future<void> openFile(String path);
 
-  @VSCodeCommand()
-  Future<String> openPanel();
+  // Example of custom command
+  @VSCodeCommand('my-extension.sayHello')
+  Future<String> sayHello(String name);
 
+  // Example with no command specified (uses method name)
   @VSCodeCommand()
-  void updateStatusBar(int count);
+  Future<String> getUserName();
+
+  // Example of void custom command
+  @VSCodeCommand('my-extension.showInfo')
+  Future<void> showInformationMessage(String message);
 }
 ```
 
+#### Command Types
+
+The `@VSCodeCommand` annotation supports different command types:
+
+- **Built-in VS Code commands**: Use VS Code's built-in command IDs like `'vscode.open'`, `'workbench.action.files.save'`
+- **Custom commands**: Define your own commands like `'my-extension.sayHello'` that will be registered by your extension
+- **Method name commands**: Use `@VSCodeCommand()` without parameters to use the method name as the command
+
+You can modify this controller or create additional controllers as needed for your extension.
+
 ### 3. Build Your Flutter UI
 
-Create your Flutter app that uses the generated controller (e.g., `lib/main.dart`):
+The `dart run flutter_vscode:init` command also creates an example Flutter app that uses the generated controller. You can examine and modify `lib/main.dart`:
 
 ```dart
 import 'package:flutter/material.dart';
-import 'my_extension_controller.dart'; // Import your controller
+import 'package:flutter_vscode/flutter_vscode.dart';
+import 'api_controller.dart';
 
 void main() {
-  runApp(const MyExtensionApp());
+  runApp(const MyApp());
 }
 
-class MyExtensionApp extends StatelessWidget {
-  const MyExtensionApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'VSCode Extension Demo',
-      home: const ExtensionPanel(),
+      title: 'Flutter VS Code Extension',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: const MyHomePage(title: 'Flutter VS Code Extension Demo'),
     );
   }
 }
 
-class ExtensionPanel extends StatefulWidget {
-  const ExtensionPanel({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
 
   @override
-  State<ExtensionPanel> createState() => _ExtensionPanelState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _ExtensionPanelState extends State<ExtensionPanel> {
-  late MyExtensionController _controller;
-  int _counter = 0;
+class _MyHomePageState extends State<MyHomePage> {
+  late ApiController _apiController;
+  String _response = '';
 
   @override
   void initState() {
     super.initState();
-    // Use the generated factory method to create controller instance
-    _controller = MyExtensionControllerFactory.create();
+    // Create the controller instance using WebviewMessageHandler
+    _apiController = ApiController(WebviewMessageHandler());
   }
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-
-    // Communicate with VSCode extension
+  Future<void> _openFile() async {
     try {
-      _controller.updateStatusBar(_counter);
+      await _apiController.openFile('/path/to/file.txt');
+      setState(() {
+        _response = 'File open command sent';
+      });
     } catch (e) {
-      debugPrint('Could not update VSCode status bar: $e');
+      setState(() {
+        _response = 'Error: $e';
+      });
+    }
+  }
+
+  Future<void> _sayHello() async {
+    try {
+      final result = await _apiController.sayHello('Flutter');
+      setState(() {
+        _response = 'Response: $result';
+      });
+    } catch (e) {
+      setState(() {
+        _response = 'Error: $e';
+      });
     }
   }
 
@@ -138,21 +176,32 @@ class _ExtensionPanelState extends State<ExtensionPanel> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('VSCode Extension Demo'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('You have clicked the button this many times:'),
+          children: <Widget>[
             Text(
-              '$_counter',
+              'VS Code Extension Demo',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _incrementCounter,
-              child: const Text('Increment & Update Status Bar'),
+              onPressed: _openFile,
+              child: const Text('Open File (VS Code Command)'),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: _sayHello,
+              child: const Text('Say Hello (Custom Command)'),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              _response,
+              style: Theme.of(context).textTheme.bodyLarge,
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -174,23 +223,26 @@ After running `dart run flutter_vscode:init`, your project will have:
 
 ```
 ├── .vscode/
-│   └── launch.json          # VSCode debug configuration (generated by VSCode)
+│   └── launch.json          # VSCode debug configuration (created when you F5)
 ├── lib/
-│   └── main.dart           # Your Flutter app
-│   └── my_extension_controller.dart # Your extension logic
-│   └── my_extension_controller.g.dart # Generated Dart code
+│   ├── main.dart           # Your Flutter app (generated)
+│   ├── api_controller.dart # Example extension controller (generated)
+│   └── api_controller.vscode.g.part # Generated Dart implementation (after build)
 ├── src/
-│   └── extension.ts        # TypeScript extension entry point
-│   └── my_extension_controller.handlers.ts # Generated TypeScript handlers
+│   ├── extension.ts        # TypeScript extension entry point (generated)
+│   ├── helpers.ts          # Helper utilities (generated)
+│   ├── generated/
+│   │   ├── api_controller.ts # Generated API integration (generated)
+│   │   └── commands.ts      # Command definitions (generated)
+│   └── api_controller.handlers.ts # Generated TypeScript handlers (after build)
 ├── web/
-│   ├── index.html          # Webview-compatible HTML
-│   ├── flutter_bootstrap.js # Flutter web bootstrap (generated)
-│   └── manifest.json       # Web app manifest (generated by Flutter)
+│   ├── index.html          # Webview-compatible HTML (generated)
+│   └── flutter_bootstrap.js # Flutter web bootstrap (generated)
 ├── scripts/
-│   └── compile.sh          # Build automation script
-├── package.json            # VSCode extension configuration
-├── tsconfig.json           # TypeScript configuration
-└── pubspec.yaml           # Flutter/Dart dependencies
+│   └── compile.sh          # Build automation script (generated)
+├── package.json            # VSCode extension configuration (generated)
+├── tsconfig.json           # TypeScript configuration (generated)
+└── pubspec.yaml           # Flutter/Dart dependencies (updated)
 ```
 
 ## Generated Files

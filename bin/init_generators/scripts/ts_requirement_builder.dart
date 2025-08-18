@@ -29,6 +29,12 @@ void setupTypescript(Directory currentDir) {
   ).writeAsStringSync(commandHandlerTemplate);
   print('Created: src/generated/commands.ts');
 
+  // Create subscriptions handler
+  File(
+    '${generatedDir.path}/subscriptions.ts',
+  ).writeAsStringSync(subscriptionsTemplate);
+  print('Created: src/generated/subscriptions.ts');
+
   // Create barrel for generated files
   File(
     '${generatedDir.path}/api_controller.ts',

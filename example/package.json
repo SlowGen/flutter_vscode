@@ -20,10 +20,7 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "npm run build",
-    "build": "tsc -p ./",
-    "watch": "tsc -watch -p ./"
+    "vscode:prepublish": "npm run compile"
   },
   "devDependencies": {
     "@types/vscode": "^1.74.0",

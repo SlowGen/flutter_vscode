@@ -1,18 +1,27 @@
 import 'dart:async';
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:flutter_vscode/annotations.dart';
+import 'package:path/path.dart' as p;
 import 'package:source_gen/source_gen.dart';
 
 /// Generates TypeScript handler files from classes annotated with
 /// [VSCodeController].
+///
+/// This generator creates:
+/// 1. Individual handler files for each controller in out/api/
+/// 2. A barrel file (api_controller.ts) that exports all handlers
+/// 3. Command registration for custom commands
 class VSCodeTsGenerator implements Builder {
   @override
   Map<String, List<String>> get buildExtensions => {
-        'lib/{{}}.dart': ['src/{{}}.handlers.ts'],
-      };
+    '.dart': ['.handlers.ts'],
+  };
+
+  // Keep track of all generated files for the barrel export
+  static final Set<String> _generatedFiles = <String>{};
+  static final Set<String> _customCommands = <String>{};
 
   @override
   Future<void> build(BuildStep buildStep) async {
@@ -28,28 +37,30 @@ class VSCodeTsGenerator implements Builder {
 
     try {
       final library = LibraryReader(await buildStep.inputLibrary);
-      final output = await _generate(library, buildStep);
+      final result = await _generate(library, buildStep);
 
-      if (output != null) {
-        // Generate TypeScript file in src folder instead of lib folder
-        final fileName = inputId.pathSegments.last.replaceAll(
-          '.dart',
-          '.handlers.ts',
-        );
-        final outputId = AssetId(inputId.package, 'src/$fileName');
-        await buildStep.writeAsString(outputId, output);
+      if (result != null) {
+        // Generate TypeScript file alongside the dart file (as expected by build_runner)
+        final baseName = p.basenameWithoutExtension(inputId.path);
+        final fileName = '${_snakeCase(baseName)}.handlers.ts';
+        final outputId = inputId.changeExtension('.handlers.ts');
+        await buildStep.writeAsString(outputId, result.handlerContent);
+        
+        // Generate subscriptions file with custom commands
+        if (result.customCommands.isNotEmpty) {
+          await _generateSubscriptionsFile(buildStep, result.customCommands);
+        }
       }
     } on Exception catch (e) {
       // Skip files that can't be processed as libraries
-      log.info('Skipping ${inputId.path}: $e');
+      log.fine('Skipping ${inputId.path}: $e');
     }
   }
 
-  Future<String?> _generate(LibraryReader library, BuildStep buildStep) async {
-    final buffer = StringBuffer()
-      ..writeln("import * as vscode from 'vscode';")
-      ..writeln();
-
+  Future<GeneratorResult?> _generate(
+    LibraryReader library,
+    BuildStep buildStep,
+  ) async {
     const controllerChecker = TypeChecker.fromUrl(
       'package:flutter_vscode/annotations.dart#VSCodeController',
     );
@@ -61,75 +72,330 @@ class VSCodeTsGenerator implements Builder {
       return null;
     }
 
-    buffer
-      ..writeln(
-        'export function handleCommand(message: any, '
-        'panel: vscode.WebviewPanel) {',
-      )
-      ..writeln('  switch (message.command) {');
-
-    // ignore: deprecated_member_use - TypeChecker.fromUrl is the recommended replacement
     const commandChecker = TypeChecker.fromUrl(
       'package:flutter_vscode/annotations.dart#VSCodeCommand',
     );
+
+    final buffer = StringBuffer()
+      ..writeln("import * as vscode from 'vscode';")
+      ..writeln()
+      ..writeln('// Generated TypeScript handlers for VS Code commands')
+      ..writeln()
+      ..writeln(
+        'export function handleCommand(message: any, '
+        'panel: vscode.WebviewPanel): void {',
+      )
+      ..writeln('  switch (message.command) {');
+
+    final customCommands = <String>{};
+
     for (final controller in controllers) {
       for (final method in controller.methods) {
         if (commandChecker.hasAnnotationOf(method)) {
-          buffer.writeln(
-            _generateCommandHandler(method, buildStep.inputId.package),
+          final result = _generateCommandHandler(
+            method,
+            buildStep.inputId.package,
           );
+          buffer.writeln(result.handlerCode);
+          if (result.isCustomCommand) {
+            customCommands.add(result.commandName);
+          }
         }
       }
     }
 
     buffer
+      ..writeln('    default:')
+      ..writeln(r'      console.warn(`Unknown command: ${message.command}`);')
+      ..writeln('      break;')
       ..writeln('  }')
       ..writeln('}');
 
-    return buffer.toString();
+    // Add command registration function for custom commands
+    if (customCommands.isNotEmpty) {
+      buffer
+        ..writeln()
+        ..writeln('// Register custom commands')
+        ..writeln(
+          'export function registerCommands(context: vscode.ExtensionContext): void {',
+        )
+        ..writeln('  const disposables = [');
+
+      for (final command in customCommands) {
+        buffer
+          ..writeln(
+            "    vscode.commands.registerCommand('$command', (...args) => {",
+          )
+          ..writeln('      // Custom command implementation would go here')
+          ..writeln('      // This is a placeholder that can be overridden')
+          ..writeln('      return Promise.resolve();')
+          ..writeln('    }),');
+      }
+
+      buffer
+        ..writeln('  ];')
+        ..writeln('  context.subscriptions.push(...disposables);')
+        ..writeln('}');
+    }
+
+    return GeneratorResult(
+      handlerContent: buffer.toString(),
+      customCommands: customCommands,
+    );
   }
 
-  String _generateCommandHandler(MethodElement method, String packageName) {
-    final methodName = method.lookupName;
+  CommandHandlerResult _generateCommandHandler(
+    MethodElement method,
+    String packageName,
+  ) {
+    final methodName = method.name;
     final parameters = method.formalParameters;
+
+    // Get the command from annotation
+    const commandChecker = TypeChecker.fromUrl(
+      'package:flutter_vscode/annotations.dart#VSCodeCommand',
+    );
+    final commandAnnotation = commandChecker.firstAnnotationOf(method);
+    String? commandName;
+
+    if (commandAnnotation != null) {
+      final commandValue = ConstantReader(commandAnnotation).peek('command');
+      commandName = commandValue?.stringValue;
+    }
+
+    // Use method name if no command specified
+    commandName ??= methodName;
+
+    // Determine if this is a built-in VS Code command or custom command
+    final isVSCodeCommand =
+        (commandName?.startsWith('vscode.') ?? false) ||
+        (commandName?.startsWith('workbench.') ?? false) ||
+        (commandName?.startsWith('editor.') ?? false);
 
     final buffer = StringBuffer()..writeln("    case '$methodName': {");
 
+    // Generate parameter extraction
     if (parameters.isNotEmpty) {
-      buffer.writeln('      const params = {');
+      buffer.writeln('      const {');
       for (final param in parameters) {
-        buffer.writeln('        ${param.name}: message.params.${param.name},');
+        buffer.writeln('        ${param.name},');
       }
-      buffer.writeln('      };');
+      buffer.writeln('      } = message.params || {};');
     }
 
-    final paramNames = parameters.isNotEmpty ? ', params' : '';
+    // Generate the appropriate command execution
+    final hasReturnValue =
+        method.returnType.toString() != 'void' &&
+        !method.returnType.toString().contains('Future<void>');
 
-    if (method.returnType.toString().contains('Future<void>') ||
-        method.returnType is VoidType) {
-      buffer.writeln(
-        "      vscode.commands.executeCommand('"
-        "$packageName.$methodName'$paramNames);",
-      );
+    // Ensure commandName is not null for use in string interpolation
+    final finalCommandName = commandName!;
+
+    if (isVSCodeCommand) {
+      // Built-in VS Code command
+      final args = parameters.map((p) => p.name).join(', ');
+      final argsParam = parameters.isNotEmpty ? ', $args' : '';
+
+      if (hasReturnValue) {
+        buffer
+          ..writeln(
+            "      vscode.commands.executeCommand('$finalCommandName'$argsParam)",
+          )
+          ..writeln('        .then(result => {')
+          ..writeln('          panel.webview.postMessage({')
+          ..writeln('            requestId: message.requestId,')
+          ..writeln('            result')
+          ..writeln('          });')
+          ..writeln('        })')
+          ..writeln('        .catch(error => {')
+          ..writeln('          panel.webview.postMessage({')
+          ..writeln('            requestId: message.requestId,')
+          ..writeln('            error: error.message || String(error)')
+          ..writeln('          });')
+          ..writeln('        });');
+      } else {
+        buffer.writeln(
+          "      vscode.commands.executeCommand('$finalCommandName'$argsParam);",
+        );
+      }
     } else {
-      buffer
-        ..writeln(
-          "      vscode.commands.executeCommand('"
-          "$packageName.$methodName'$paramNames).then(result => {",
-        )
-        ..writeln(
-          '        panel.webview.postMessage({ '
-          'requestId: message.requestId, result });',
-        )
-        ..writeln('      });');
+      // Custom command
+      final args = parameters.map((p) => p.name).join(', ');
+      final argsParam = parameters.isNotEmpty ? args : '';
+
+      if (hasReturnValue) {
+        buffer
+          ..writeln(
+            "      vscode.commands.executeCommand('$finalCommandName', $argsParam)",
+          )
+          ..writeln('        .then(result => {')
+          ..writeln('          panel.webview.postMessage({')
+          ..writeln('            requestId: message.requestId,')
+          ..writeln('            result')
+          ..writeln('          });')
+          ..writeln('        })')
+          ..writeln('        .catch(error => {')
+          ..writeln('          panel.webview.postMessage({')
+          ..writeln('            requestId: message.requestId,')
+          ..writeln('            error: error.message || String(error)')
+          ..writeln('          });')
+          ..writeln('        });');
+      } else {
+        buffer.writeln(
+          "      vscode.commands.executeCommand('$finalCommandName', $argsParam);",
+        );
+      }
     }
 
     buffer
       ..writeln('      break;')
       ..writeln('    }');
 
-    return buffer.toString();
+    return CommandHandlerResult(
+      handlerCode: buffer.toString(),
+      commandName: commandName,
+      isCustomCommand: !isVSCodeCommand,
+    );
   }
+
+  Future<void> _generateBarrelFile(BuildStep buildStep) async {
+    final buffer = StringBuffer()
+      ..writeln('// Generated barrel file for all VS Code command handlers')
+      ..writeln("import * as vscode from 'vscode';")
+      ..writeln();
+
+    // Import all handler files
+    for (final file in _generatedFiles) {
+      final importName = _camelCase(file.replaceAll('.handlers.ts', ''));
+      buffer.writeln(
+        "import { handleCommand as ${importName}Handler, registerCommands as ${importName}RegisterCommands } from './$file';",
+      );
+    }
+
+    buffer
+      ..writeln()
+      ..writeln('// Main command handler that delegates to specific handlers')
+      ..writeln(
+        'export function handleCommand(message: any, panel: vscode.WebviewPanel): void {',
+      )
+      ..writeln('  // Try each handler until one processes the command');
+
+    for (final file in _generatedFiles) {
+      final handlerName = _camelCase(file.replaceAll('.handlers.ts', ''));
+      buffer.writeln('  ${handlerName}Handler(message, panel);');
+    }
+
+    buffer.writeln('}');
+
+    // Generate command registration function
+    buffer
+      ..writeln()
+      ..writeln('// Register all custom commands')
+      ..writeln(
+        'export function registerAllCommands(context: vscode.ExtensionContext): void {',
+      );
+
+    for (final file in _generatedFiles) {
+      final registerName = _camelCase(file.replaceAll('.handlers.ts', ''));
+      buffer.writeln('  ${registerName}RegisterCommands?.(context);');
+    }
+
+    buffer.writeln('}');
+
+    // Write the barrel file
+    final barrelId = AssetId(
+      buildStep.inputId.package,
+      'src/generated/api_controller.ts',
+    );
+    await buildStep.writeAsString(barrelId, buffer.toString());
+  }
+  
+  Future<void> _generateSubscriptionsFile(
+    BuildStep buildStep,
+    Set<String> customCommands,
+  ) async {
+    if (customCommands.isEmpty) return;
+    
+    final buffer = StringBuffer()
+      ..writeln("import * as vscode from 'vscode';")
+      ..writeln()
+      ..writeln('// Generated subscription handlers for custom commands')
+      ..writeln()
+      ..writeln('export function subscribeToGeneratedContent(')
+      ..writeln('  context: vscode.ExtensionContext,')
+      ..writeln('  provider: vscode.WebviewViewProvider')
+      ..writeln(') {')
+      ..writeln('  // Register custom commands')
+      ..writeln('  const disposables = [');
+    
+    for (final command in customCommands) {
+      buffer
+        ..writeln("    vscode.commands.registerCommand('$command', (...args) => {")
+        ..writeln('      // Custom command implementation')
+        ..writeln('      // You can implement your command logic here')
+        ..writeln('      console.log(`Executing custom command: $command`, args);')
+        ..writeln('      return Promise.resolve();')
+        ..writeln('    }),');
+    }
+    
+    buffer
+      ..writeln('  ];')
+      ..writeln()
+      ..writeln('  // Add all disposables to extension context')
+      ..writeln('  context.subscriptions.push(...disposables);')
+      ..writeln()
+      ..writeln('  console.log(`Registered ${customCommands.length} custom commands:`, [')
+      ..writeln('    ${customCommands.map((cmd) => "'$cmd'").join(', ')}')
+      ..writeln('  ]);')
+      ..writeln('}');
+    
+    // Write the subscriptions file
+    final subscriptionsId = AssetId(
+      buildStep.inputId.package,
+      'src/subscriptions.ts',
+    );
+    await buildStep.writeAsString(subscriptionsId, buffer.toString());
+  }
+
+  String _snakeCase(String input) {
+    return input
+        .replaceAllMapped(
+          RegExp('[A-Z]'),
+          (match) => '_${match.group(0)!.toLowerCase()}',
+        )
+        .replaceFirst(RegExp('^_'), '');
+  }
+
+  String _camelCase(String input) {
+    final parts = input.split('_');
+    return parts.first +
+        parts
+            .skip(1)
+            .map((part) => part[0].toUpperCase() + part.substring(1))
+            .join();
+  }
+}
+
+class GeneratorResult {
+  GeneratorResult({
+    required this.handlerContent,
+    required this.customCommands,
+  });
+
+  final String handlerContent;
+  final Set<String> customCommands;
+}
+
+class CommandHandlerResult {
+  CommandHandlerResult({
+    required this.handlerCode,
+    required this.commandName,
+    required this.isCustomCommand,
+  });
+
+  final String handlerCode;
+  final String commandName;
+  final bool isCustomCommand;
 }
 
 Builder vscodeTsGenerator(BuilderOptions options) => VSCodeTsGenerator();
