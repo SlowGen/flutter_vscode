@@ -201,6 +201,38 @@ The build process automatically generates:
 -   `flutter_bootstrap.js` - Webview communication bridge
 -   Modified `web/index.html` (after `compile.sh` moves `index.html.temp`)
 
+### Communicating from VSCode to Flutter
+
+While the `@VSCodeCommand` annotations are great for Flutter-to-VSCode communication, you might need to send messages from the VSCode extension back to your Flutter UI. This is where the `WebviewMessageHandler` comes in.
+
+You can use it in your Flutter app to listen for messages sent from the TypeScript side of your extension.
+
+**1. Initialize the handler in your Flutter app:**
+
+```dart
+import 'package:flutter_vscode/flutter_vscode.dart';
+
+// ... in your widget's state
+
+late final WebviewMessageHandler _messageHandler;
+
+@override
+void initState() {
+  super.initState();
+  _messageHandler = WebviewMessageHandler()
+    ..setMessageHandler((message) {
+      // Handle the message from VSCode
+      print('Received message from VSCode: ${message.command} - ${message.params} - ${message.requestId} - ${message.error} - ${message.result}');
+    });
+}
+
+@override
+void dispose() {
+  _messageHandler.dispose();
+  super.dispose();
+}
+```
+
 ## Additional Information
 
 ### Webview Constraints

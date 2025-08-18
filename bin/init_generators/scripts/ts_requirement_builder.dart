@@ -13,11 +13,26 @@ void setupTypescript(Directory currentDir) {
   File('${srcDir.path}/extension.ts').writeAsStringSync(extensionTemplate);
   print('Created: src/extension.ts');
 
-  // Create api_controller.handlers.ts
+  // Create helpers.ts
+  File('${srcDir.path}/helpers.ts').writeAsStringSync(helpersTemplate);
+  print('Created: src/helpers.ts');
+
+  // Create generated file directory
+  final generatedDir = Directory('${srcDir.path}/generated');
+  if (!generatedDir.existsSync()) {
+    generatedDir.createSync();
+  }
+
+  // Create command handler
   File(
-    '${srcDir.path}/api_controller.handlers.ts',
-  ).writeAsStringSync(apiControllerHandlersTemplate);
-  print('Created: src/api_controller.handlers.ts');
+    '${generatedDir.path}/commands.ts',
+  ).writeAsStringSync(commandHandlerTemplate);
+  print('Created: src/generated/commands.ts');
+
+  // Create barrel for generated files
+  File(
+    '${generatedDir.path}/api_controller.ts',
+  ).writeAsStringSync(barrelTsTemplate);
 
   // Create package.json
   File(

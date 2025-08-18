@@ -1,18 +1,18 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter_vscode/src/command_message.dart';
-import 'package:flutter_vscode/src/webview_bridge.dart';
+import 'package:flutter_vscode/src/vscode_interop.dart';
 
 /// Base class for generated VS Code controllers.
 ///
 /// This class provides the common functionality for sending messages
 /// to the VS Code extension and handling responses.
 abstract class VSCodeControllerBase {
-  VSCodeControllerBase(this._bridge) {
-    _bridge.setMessageHandler(handleMessage);
+  VSCodeControllerBase(this._handler) {
+    _handler.setMessageHandler(handleMessage);
   }
 
-  final WebViewBridge _bridge;
+  final WebviewMessageHandler _handler;
   final Map<String, Completer<dynamic>> _pendingRequests = {};
   final Random _random = Random();
 
@@ -35,11 +35,11 @@ abstract class VSCodeControllerBase {
       final completer = Completer<T>();
       _pendingRequests[requestId] = completer;
 
-      _bridge.postMessage(message);
+      _handler.postMessage(message);
 
       return completer.future;
     } else {
-      _bridge.postMessage(message);
+      _handler.postMessage(message);
       return Future.value();
     }
   }

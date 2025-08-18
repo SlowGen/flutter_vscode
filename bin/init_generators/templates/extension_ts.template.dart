@@ -1,76 +1,84 @@
-const String extensionTemplate = '''
+const String extensionTemplate = r'''
 import * as vscode from 'vscode';
-import { handleCommand } from './api_controller.handlers';
+import * as path from 'path';
+import * as fs from 'fs';
+import { getProjectName } from './helpers';
+import { subscribeToGeneratedContent } from './subscription_handler';
+
+const projectName = getProjectName();
 
 export function activate(context: vscode.ExtensionContext) {
-    const disposable = vscode.commands.registerCommand('flutter-vscode.openWebview', () => {
-        const panel = vscode.window.createWebviewPanel(
-            'flutterVSCode',
-            'Flutter VS Code Extension',
-            vscode.ViewColumn.One,
-            {
-                enableScripts: true,
-                retainContextWhenHidden: true,
-            }
-        );
+    const provider = new FlutterWebviewProvider(context.extensionUri);
 
-        // Load the Flutter web app
-        panel.webview.html = getWebviewContent();
+    // The viewType is now dynamically set based on the pubspec.yaml name
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(FlutterWebviewProvider.viewType, provider)
+    );
+
+    subscribeToGeneratedContent(context, provider);
+
+}
+
+class FlutterWebviewProvider implements vscode.WebviewViewProvider {
+    public static readonly viewType = `${projectName}.project`;
+
+    public view?: vscode.WebviewView;
+
+    constructor(
+        private readonly _extensionUri: vscode.Uri,
+    ) {}
+
+
+    public resolveWebviewView(
+        webviewView: vscode.WebviewView,
+        context: vscode.WebviewViewResolveContext,
+        _token: vscode.CancellationToken,
+    ) {
+        this.view = webviewView;
+
+        // Configure the webview
+        webviewView.webview.options = {
+            enableScripts: true,
+            localResourceRoots: [
+                vscode.Uri.joinPath(this._extensionUri, 'build', 'web')
+            ]
+        };
+
+        // Set its HTML content
+        webviewView.webview.html = this._getHtml(webviewView.webview);
 
         // Handle messages from the webview
-        panel.webview.onDidReceiveMessage(
-            message => {
-                if (message.command) {
-                    handleCommand(message, panel);
-                } else {
-                    // Forward responses back to the Flutter app
-                    panel.webview.postMessage(message);
-                }
-            },
-            undefined,
-            context.subscriptions
-        );
-    });
+        webviewView.webview.onDidReceiveMessage(data => {
 
-    context.subscriptions.push(disposable);
-}
-
-function getWebviewContent(): string {
-    return `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flutter VS Code Extension</title>
-</head>
-<body>
-    <div id="output"></div>
-    <script src="main.dart.js"></script>
-    <script>
-        // Bridge for communication with VS Code
-        const vscode = acquireVsCodeApi();
-
-        window.addEventListener('message', event => {
-            const message = event.data;
-            if (message && message.requestId) {
-                // Forward response back to Flutter
-                window.postMessage(message, '*');
-            }
         });
+    }
 
-        // Override postMessage to send to VS Code
-        const originalPostMessage = window.postMessage;
-        window.postMessage = function(message, origin) {
-            if (typeof message === 'object' && message.command) {
-                vscode.postMessage(message);
-            } else {
-                originalPostMessage.call(window, message, origin);
-            }
-        };
-    </script>
-</body>
-</html>`;
+    private _getHtml(webview: vscode.Webview): string {
+		const webviewUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "build", "web"));
+
+        console.log('webviewUri', webviewUri);
+
+        // Read the built index.html file
+        const indexHtmlPath = path.join(this._extensionUri.fsPath, "build", "web", "index.html");
+        let indexHtml = '';
+        try {
+            indexHtml = fs.readFileSync(indexHtmlPath, 'utf8');
+            console.log('Successfully read index.html');
+        } catch (error) {
+            console.error('Could not read build/web/index.html:', error);
+            return `<html><body><h1>Error: Could not load Flutter app</h1><p>build/web/index.html not found</p></body></html>`;
+        }
+
+        // Replace the base href with the webview URI
+        // The built index.html will have <base href="/"> instead of $FLUTTER_BASE_HREF
+        indexHtml = indexHtml.replace('<base href="/">', `<base href="${webviewUri}/">`);
+
+        console.log('Modified index.html for webview');
+        return indexHtml;
+    }
 }
+
 
 export function deactivate() {}
+
 ''';

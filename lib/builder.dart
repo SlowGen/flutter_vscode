@@ -2,10 +2,6 @@
 // It configures the code generator.
 
 import 'package:build/build.dart';
-import 'package:flutter_vscode/src/package_json_builder.dart';
-import 'package:flutter_vscode/src/vscode_extension_generator.dart';
-import 'package:flutter_vscode/src/vscode_ts_generator.dart';
-import 'package:flutter_vscode/src/webview_builder.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// Configures the build process for the VS Code Extension generator.
