@@ -1,41 +1,35 @@
 # Generated File Ownership
 
-This guide explains what you should edit manually and what should be regenerated.
+An Extension Project has two ownership classes. Keep this boundary intact so
+`build` can regenerate and repair the project deterministically.
 
-## Regenerate (do not hand-edit)
+## Author-owned source
 
-- `*.vscode.g.part`: generated Dart controller implementations.
-- `*.handlers.ts`: generated TypeScript command handlers.
+- `extension.dart`: metadata and contributions.
+- `host/lib/**`: activation, commands, providers, and host lifecycle behavior.
+- `shared/lib/**`: pure Dart code shared across runtimes.
+- `views/**`: optional Flutter view source and assets.
 
-If these files drift from source annotations, rerun:
+Edit these files directly and commit them.
 
-```bash
-dart run build_runner build --delete-conflicting-outputs
+## Framework-managed artifacts
+
+- `package.json`.
+- `host/bootstrap.cjs` and `host/lib/generated/**` -- which is only what is
+  derived from this project: its extension identifier, its collision-resistant
+  global key, and the bindings tied to them. Framework code is not copied
+  here; it ships in `package:dart_vscode` (ADR 0015).
+- `.vscode/launch.json`.
+- `out/**`, including the host bundle, source map, and built view assets.
+- `build/*.vsix`.
+
+Do not hand-edit these files. Regenerate them with:
+
+```sh
+flutter_vscode build
 ```
 
-## Scaffolded once (safe by default on rerun)
+Repeated builds from unchanged source must produce byte-identical managed
+content. `flutter_vscode package` validates the current managed artifacts and
+the exact VSIX entry set before reporting success.
 
-`generate_vscode_extension` creates these files and skips them if they already exist:
-
-- `src/extension.ts`
-- `src/vscode_invoke.ts` (generic VS Code API dispatcher)
-- `package.json`
-- `tsconfig.json`
-- `web/index.html`
-- `web/flutter_bootstrap.js`
-- `web/manifest.json`
-- `lib/vscode_api.dart`
-- `AGENTS.md`
-- `agent-skills/` (portable workflow guides for AI agents)
-
-This behavior prevents clobbering local customizations.
-
-## Merge behavior
-
-- `.gitignore` is appended with missing extension-related entries.
-
-## Recommended workflow
-
-1. Treat annotated Dart source as the source of truth.
-2. Regenerate code after changing commands/signatures.
-3. Keep custom extension host logic in `src/extension.ts`.

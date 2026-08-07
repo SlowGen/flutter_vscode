@@ -1,0 +1,50 @@
+{
+  "name": "pubspec-lens",
+  "displayName": "Pubspec Lens",
+  "description": "Dependency intelligence for pubspec.yaml: hovers, outdated-pin diagnostics, CodeLens updates, and a dependency tree.",
+  "version": "0.0.1",
+  "publisher": "local",
+  "engines": {
+    "vscode": "1.129.1"
+  },
+  "main": "./out/bootstrap.cjs",
+  "activationEvents": [
+    "onLanguage:yaml",
+    "workspaceContains:pubspec.yaml"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "pubspec-lens.refresh",
+        "title": "Pubspec Lens: Refresh"
+      },
+      {
+        "command": "pubspec-lens.update",
+        "title": "Pubspec Lens: Apply Suggested Constraint"
+      },
+      {
+        "command": "pubspec-lens.smoke",
+        "title": "Pubspec Lens: Smoke Report (diagnostics)"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "pubspecLens.dependencies",
+          "name": "Pubspec Dependencies",
+          "icon": "$(package)"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Pubspec Lens",
+      "properties": {
+        "pubspecLens.registryUrl": {
+          "type": "string",
+          "default": "https://pub.dev",
+          "description": "Base URL of the pub-compatible package registry."
+        }
+      }
+    }
+  }
+}

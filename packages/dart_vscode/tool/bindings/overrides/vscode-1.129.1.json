@@ -1,0 +1,380 @@
+{
+  "schemaVersion": 1,
+  "vscodeVersion": "1.129.1",
+  "manifestSchemaSha256": "feddc98984b755a95644674910aa8c671e3259f137698c581ec7e2837cb058aa",
+  "manifestValidatorSha256": "e8ae92aa491ab138b6f625acbbcbd7c53ff187098066ff13aebb64615202dde1",
+  "commandsContributionSchemaSha256": "a85c943ae42b2cdef0403070f78cfb9dbe7bcdc1fce7c57bf9ca2234d1e36a33",
+  "viewsContributionSchemaSha256": "17006750e3af4359fa5a518bf8dcb14beb060e98bc401245302a46030172a102",
+  "configurationContributionSchemaSha256": "e9faa24f3835b807762aa069a8029c3b004b76a3e7f42ceddee598b71b26cb0a",
+  "hostContracts": {
+    "checkpoint4ExtensionHost": {
+      "boundary": "vscodeExtensionHost",
+      "artifact": "tool/bindings/contracts/checkpoint4-extension-host.json",
+      "artifactSha256": "0e925462e31dbb836376766ff4c283f09100964217f5043f35d53dd9be8c1152"
+    }
+  },
+  "targets": [
+    "callSignature:vscode.Event.$call@ca2a1c0079bda6fe4025d2d6485a90eb0e007d05ec6764cf97cc592c7b6fde49",
+    "class:vscode.Disposable",
+    "class:vscode.Hover",
+    "class:vscode.MarkdownString",
+    "class:vscode.Position",
+    "class:vscode.Range",
+    "class:vscode.RelativePattern",
+    "class:vscode.Uri",
+    "constructor:vscode.Hover.constructor@6178ff7eda91386cd069becefbe461cb05ebbfd88a5b0094b86df99b60c42d5b",
+    "constructor:vscode.MarkdownString.constructor@778db11e42722b5fdfd54cb5c08b7cbae6f446502675c24b6e1baafb768f8763",
+    "constructor:vscode.Range.constructor@96fdd2143cf2ad164603faafc0bc158b86ecec84199402dcbea3c53247046e73",
+    "constructor:vscode.Range.constructor@feb11e87d50082b0a3dce50eb837c5fb2141e1972675614c832daac107a42aa2",
+    "enum:vscode.ViewColumn",
+    "enumMember:enum:vscode.ViewColumn/One",
+    "function:vscode.commands.executeCommand@b17465f671e67bfe53e6a6035f410a9da4014065660ba0353f0c1819e01e51c4",
+    "function:vscode.commands.registerCommand@34f73a03df1575981702703e8a718cb4adc33e54b09dd607cb695dbc0a6fe811",
+    "function:vscode.languages.registerHoverProvider@359bc682e80de72a8b404f4910825931a7d3218571ce6fbc7c24e51b6fdda82c",
+    "function:vscode.window.createWebviewPanel@94de15f3ecd5ac614c2e7f2e9f6bbd86486c03518babb3d14a8888c0b428a6d1",
+    "interface:global.Thenable",
+    "interface:vscode.CancellationToken",
+    "interface:vscode.DocumentFilter",
+    "interface:vscode.Event",
+    "interface:vscode.ExtensionContext",
+    "interface:vscode.HoverProvider",
+    "interface:vscode.TextDocument",
+    "interface:vscode.Webview",
+    "interface:vscode.WebviewOptions",
+    "interface:vscode.WebviewPanel",
+    "interface:vscode.WebviewPanelOptions",
+    "method:vscode.Disposable.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650",
+    "method:property:interface:vscode.ExtensionContext/$instance/subscriptions.$shape@31f5ad1b22b80cac163fbf14d0444cee2ac230b6bc82f0c3ed62216bcbec740e.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650",
+    "method:vscode.HoverProvider.provideHover@a969cbd1bc9d722b55f274c6a1498f88b5a0f8111d844c87acb34af847215f47",
+    "method:vscode.Uri.joinPath@def462330bbbdd12dba18cecdb919bfb417658caeb2e1f58c491cbffb8630c60",
+    "method:vscode.Uri.toString@f34ea61ca7bffcee2909bb6d6e58a9ac5b97c70f77ba6a2e899890a9aadbfd06",
+    "method:vscode.Webview.asWebviewUri@d651d976be2224c53dd59a45880372a0ad40e686c697b38c14bcd4a900d02675",
+    "method:vscode.Webview.postMessage@a2972cc260d088838e09de8dc683393276ed8c03d172023d9a807a9d585d71a1",
+    "method:vscode.WebviewPanel.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650",
+    "namespace:vscode.commands",
+    "namespace:vscode.languages",
+    "namespace:vscode.window",
+    "namespace:vscode.workspace",
+    "property:class:vscode.Position/$instance/character",
+    "property:class:vscode.Position/$instance/line",
+    "property:interface:vscode.CancellationToken/$instance/isCancellationRequested",
+    "property:interface:vscode.ExtensionContext/$instance/extensionUri",
+    "property:interface:vscode.ExtensionContext/$instance/subscriptions",
+    "property:interface:vscode.Webview/$instance/cspSource",
+    "property:interface:vscode.Webview/$instance/html",
+    "property:interface:vscode.Webview/$instance/onDidReceiveMessage",
+    "property:interface:vscode.WebviewOptions/$instance/enableScripts",
+    "property:interface:vscode.WebviewOptions/$instance/localResourceRoots",
+    "property:interface:vscode.WebviewPanel/$instance/onDidDispose",
+    "property:interface:vscode.WebviewPanel/$instance/webview",
+    "typeAlias:vscode.DocumentSelector",
+    "typeAlias:vscode.GlobPattern",
+    "typeAlias:vscode.MarkedString",
+    "typeAlias:vscode.ProviderResult",
+    "typeLiteral:property:interface:vscode.ExtensionContext/$instance/subscriptions/$shape@31f5ad1b22b80cac163fbf14d0444cee2ac230b6bc82f0c3ed62216bcbec740e",
+    "typeLiteral:function:vscode.window.createWebviewPanel@94de15f3ecd5ac614c2e7f2e9f6bbd86486c03518babb3d14a8888c0b428a6d1/$shape@daf931678b910da51d566ca28f15b10f0919f8b5e0c942ec47fe0c8c8a874ef3",
+    "variable:vscode.workspace.onDidOpenTextDocument"
+  ],
+  "entries": {
+    "callSignature:vscode.Event.$call@ca2a1c0079bda6fe4025d2d6485a90eb0e007d05ec6764cf97cc592c7b6fde49": {
+      "strategy": "eventSubscription",
+      "declarationSha256": "58061ae4f721a8ead1f2c217c062de6d64e040b027fc734c3d7852d7ffc07cfe",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "class:vscode.Disposable": {
+      "strategy": "nativeJsClass",
+      "declarationSha256": "1eba264714f0cad5d9a858df05fef41cc3be8cfe9facd3cfa0f102cec538e649",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "class:vscode.Hover": {
+      "strategy": "nativeJsClass",
+      "declarationSha256": "25cbf4169de0deb709e3def61d3b08c5ed8fcaa9b5b46abfcd1e8015108e05d2",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "class:vscode.MarkdownString": {
+      "strategy": "nativeJsClass",
+      "declarationSha256": "f2068f543d06f4e70541c9ca9e984252997169dbb866ff59956ef31d995787fc",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "class:vscode.Position": {
+      "strategy": "opaqueHostObject",
+      "declarationSha256": "d2fce03aa863387f23981337e1c134aa8c8720ef34151d16c7f703feadbe5ded",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "class:vscode.Range": {
+      "strategy": "nativeJsClass",
+      "declarationSha256": "794e7638721abbb808f34f2d49c7deeef1ff50d68f43ec6230cb3969883ca005",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "class:vscode.RelativePattern": {
+      "strategy": "reviewedExcluded",
+      "declarationSha256": "ba41ef233970989c328a63d6ee66b4996578423da4ea9d490ad55f0678ca4c6b",
+      "reason": "Only needed by the excluded GlobPattern object branch."
+    },
+    "class:vscode.Uri": {
+      "strategy": "nativeJsClass",
+      "declarationSha256": "5c2a025a61dd2e00adfeb13a16e344bf98db72b6832edb0a066768344f88b912",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "constructor:vscode.Hover.constructor@6178ff7eda91386cd069becefbe461cb05ebbfd88a5b0094b86df99b60c42d5b": {
+      "strategy": "markdownHoverConstructor",
+      "declarationSha256": "48940761c8f228715cc703d950c4612256ca98284916baf2651fa79ec4da0d31",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "constructor:vscode.MarkdownString.constructor@778db11e42722b5fdfd54cb5c08b7cbae6f446502675c24b6e1baafb768f8763": {
+      "strategy": "markdownStringConstructor",
+      "declarationSha256": "806bfca9ed7e72caeb52531ae1ae6cb12315d272526bd6c991e4677bdf7c7bca",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "constructor:vscode.Range.constructor@96fdd2143cf2ad164603faafc0bc158b86ecec84199402dcbea3c53247046e73": {
+      "strategy": "reviewedExcluded",
+      "declarationSha256": "bb92386081849bfb75595ff59c6e2f3d5bd46b2850c2402b26ec0d594c3a8262",
+      "reason": "The walking slice constructs Range from four numeric coordinates."
+    },
+    "constructor:vscode.Range.constructor@feb11e87d50082b0a3dce50eb837c5fb2141e1972675614c832daac107a42aa2": {
+      "strategy": "numericRangeConstructor",
+      "declarationSha256": "10c7a7df9f890df3884117749a808aae512a54c7adb62010117353144582d798",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "enum:vscode.ViewColumn": {
+      "strategy": "nativeJsEnum",
+      "declarationSha256": "5a4cc0dde64efd7715cb2b37f46956ab8cf1145b74a5234f49e163bc42753116",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "enumMember:enum:vscode.ViewColumn/One": {
+      "strategy": "intEnumMember",
+      "declarationSha256": "e6262b54fd8d4e12b5599c0043da65e025abf592689b74841be0d82ff1e5109e",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "function:vscode.commands.executeCommand@b17465f671e67bfe53e6a6035f410a9da4014065660ba0353f0c1819e01e51c4": {
+      "strategy": "commandExecution",
+      "declarationSha256": "7749494eaa2840164c352ecf2cd0db72934be30cabbf41601ee2797e543629f0",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "function:vscode.commands.registerCommand@34f73a03df1575981702703e8a718cb4adc33e54b09dd607cb695dbc0a6fe811": {
+      "strategy": "commandRegistration",
+      "declarationSha256": "beb219ea10541f3bba1acb35986e07a4a88efda364fbbe50ec5319d4ed1321fc",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "function:vscode.languages.registerHoverProvider@359bc682e80de72a8b404f4910825931a7d3218571ce6fbc7c24e51b6fdda82c": {
+      "strategy": "hoverProviderRegistration",
+      "declarationSha256": "899ff6366c1f21d994be4515af5a0540ef0cb96e4eb8f3a04caac2def7720abf",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "function:vscode.window.createWebviewPanel@94de15f3ecd5ac614c2e7f2e9f6bbd86486c03518babb3d14a8888c0b428a6d1": {
+      "strategy": "webviewPanelCreation",
+      "declarationSha256": "7c9c491c1aef89bbff8f8755890f850c5daa5078d2871a6312a4f313b9b25cc9",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "interface:global.Thenable": {
+      "strategy": "thenableFutureBridge",
+      "declarationSha256": "943f9cce48fa4d88f856ffdccfda6de08f9cbf6ab836eb241cd4163f9754696f",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "interface:vscode.CancellationToken": {
+      "strategy": "opaqueHostObject",
+      "declarationSha256": "135ab16bcde56dde54ee22b0f0d6b397b4d054cdbb333ad2cb2ba8aad417ae84",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "interface:vscode.DocumentFilter": {
+      "strategy": "reviewedExcluded",
+      "declarationSha256": "698f6f49a5e3826b0fe6e74c7c130a7d55324fd20fc4fe322dfc24c2522b63c1",
+      "reason": "The walking slice selects DocumentSelector's string branch."
+    },
+    "interface:vscode.Event": {
+      "strategy": "eventType",
+      "declarationSha256": "4329ce64055763bf1ad5e88d1bdae795e8943ba26cb0052228f8b17a98475b6d",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "interface:vscode.ExtensionContext": {
+      "strategy": "opaqueHostObject",
+      "declarationSha256": "79c500e8ad87721909584cec606aeace4662a37c0c45f8df27b3246446ae9b70",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "interface:vscode.HoverProvider": {
+      "strategy": "providerObject",
+      "declarationSha256": "54550e78e259f6f4ba50a5d3cb5a4faee9a038b6655730815198c90ef6adf014",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "interface:vscode.TextDocument": {
+      "strategy": "opaqueHostObject",
+      "declarationSha256": "33bbc14559c955c29d55456c0d246eb1de5ae9704a91abd2bd9ea113df4ea359",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "interface:vscode.Webview": {
+      "strategy": "opaqueHostObject",
+      "declarationSha256": "3f760022c9ce40122985f150a8ac9b1aa57287b08cccce6cc7472cf35902136d",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "interface:vscode.WebviewOptions": {
+      "strategy": "jsObjectLiteral",
+      "declarationSha256": "4151443012ac90391d55950277e80d2152bb11c2957c77918313f595286c0967",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "interface:vscode.WebviewPanel": {
+      "strategy": "opaqueHostObject",
+      "declarationSha256": "9129ba5530af83366765ae16a79882942b4539879552eede31e64f84ac5b7890",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "interface:vscode.WebviewPanelOptions": {
+      "strategy": "reviewedExcluded",
+      "declarationSha256": "517b58e47dcdda1237a38fe29c7d7798d6982cd90cfcebba8a74a63c65576abc",
+      "reason": "The first Flutter View uses no WebviewPanelOptions fields."
+    },
+    "method:vscode.Disposable.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650": {
+      "strategy": "disposeMethod",
+      "declarationSha256": "42733240df320a5e379924dd24a90a554c88511de0f169cd6311eb328ba30926",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "method:property:interface:vscode.ExtensionContext/$instance/subscriptions.$shape@31f5ad1b22b80cac163fbf14d0444cee2ac230b6bc82f0c3ed62216bcbec740e.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650": {
+      "strategy": "disposeMethod",
+      "declarationSha256": "f9b41d2ccc6fafa5e87ab7dac346910db81fada23b290e882241b72879dcd9b6",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "method:vscode.HoverProvider.provideHover@a969cbd1bc9d722b55f274c6a1498f88b5a0f8111d844c87acb34af847215f47": {
+      "strategy": "providerCallback",
+      "declarationSha256": "cef5e19b9acb8a5ec0afca18776b807fe1a29c11ba872036a305293fdad311fd",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "method:vscode.Uri.joinPath@def462330bbbdd12dba18cecdb919bfb417658caeb2e1f58c491cbffb8630c60": {
+      "strategy": "uriJoinPath",
+      "declarationSha256": "ff431449b0255768d21962ada2f9671cd5276188f63d0cccce09a14986ecca89",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "method:vscode.Uri.toString@f34ea61ca7bffcee2909bb6d6e58a9ac5b97c70f77ba6a2e899890a9aadbfd06": {
+      "strategy": "uriToString",
+      "declarationSha256": "cd66c76a912c69b6c1b24dab0253e46fad1abd94e5dc02a9dcec40c3515e252a",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "method:vscode.Webview.asWebviewUri@d651d976be2224c53dd59a45880372a0ad40e686c697b38c14bcd4a900d02675": {
+      "strategy": "unaryUriMethod",
+      "declarationSha256": "6735ba7e8610fde5c0be193e47efdeb336b330d26e950644b0061417fbef243d",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "method:vscode.Webview.postMessage@a2972cc260d088838e09de8dc683393276ed8c03d172023d9a807a9d585d71a1": {
+      "strategy": "thenableBoolMethod",
+      "declarationSha256": "d2f0ec312a7d2f7b6ccbf5bf41e365bb823145cf31c416997393a9febec3cb51",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "method:vscode.WebviewPanel.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650": {
+      "strategy": "disposeMethod",
+      "declarationSha256": "949856479625687fdd2f036ae893492c2b3e29738dbc3d648914b94ece3a0d7a",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "namespace:vscode.commands": {
+      "strategy": "namespaceObject",
+      "declarationSha256": "844bd4d3e0252e900c9bb20845c0968d7b983d91451ab9f3c38b0fcacc5836ca",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "namespace:vscode.languages": {
+      "strategy": "namespaceObject",
+      "declarationSha256": "bb4ce6caf0043fb1b9dd816829627ecf94de4ba98263f0d3f29554c1e61b453e",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "namespace:vscode.window": {
+      "strategy": "namespaceObject",
+      "declarationSha256": "fb706691d240655bb59c01a8ec6f4eef317ad8bb0a12e051239c822eb6c50a69",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "namespace:vscode.workspace": {
+      "strategy": "namespaceObject",
+      "declarationSha256": "f14b753f2b1af510b1ee1841989c77644e27c01bdc8ed57e48b987de0c8d5a0c",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "property:class:vscode.Position/$instance/character": {
+      "strategy": "intGetterProjection",
+      "declarationSha256": "a99461344d5671d5d5e1713804e327ad19048fcf2a446299e06785abb90d5ba1",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "property:class:vscode.Position/$instance/line": {
+      "strategy": "intGetterProjection",
+      "declarationSha256": "643a275245b8348baa4ee8eec7450797f401ab51587a2bd61a345bf3e07dfaa4",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "property:interface:vscode.CancellationToken/$instance/isCancellationRequested": {
+      "strategy": "boolGetterProjection",
+      "declarationSha256": "61239cbbf60554921fb06606e13a213b2ab7d8e8dd30fd947a858308403a7229",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "property:interface:vscode.ExtensionContext/$instance/extensionUri": {
+      "strategy": "objectGetterProjection",
+      "declarationSha256": "09a58eb8c40f546264fff9e29ea5ff1869096648d8679a6d5ea010d315ce8271",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "property:interface:vscode.ExtensionContext/$instance/subscriptions": {
+      "strategy": "subscriptionsArray",
+      "declarationSha256": "483374c331338813c6b87fe4cfb0e3a8ea67d8a70817c0262991ca2520a62cb1",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "property:interface:vscode.Webview/$instance/cspSource": {
+      "strategy": "stringGetterProjection",
+      "declarationSha256": "f19a3dcb164350bfee48ccbc85d0d4e77e6efd46f4a53156b12d915a0ee88a26",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "property:interface:vscode.Webview/$instance/html": {
+      "strategy": "stringGetterSetterProjection",
+      "declarationSha256": "bab1b17fcfb13d25b39449b6165b3b07a141db7953ea9488ce4afe6cf93c5b8f",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "property:interface:vscode.Webview/$instance/onDidReceiveMessage": {
+      "strategy": "eventValue",
+      "declarationSha256": "7448d1662e3e16d5a666d71fecb872a3a6fe0f2f95f8a4d4af5897b19758d294",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "property:interface:vscode.WebviewOptions/$instance/enableScripts": {
+      "strategy": "boolObjectField",
+      "declarationSha256": "88dd40fdbd68e24d7b3199c5444ae4831ea795691d47cf424b08f33059bc0984",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "property:interface:vscode.WebviewOptions/$instance/localResourceRoots": {
+      "strategy": "uriArrayObjectField",
+      "declarationSha256": "576ecb0bb66118a6d365761d0111b7f5b56f603af027bc5968861c090cf61564",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "property:interface:vscode.WebviewPanel/$instance/onDidDispose": {
+      "strategy": "voidEventValue",
+      "declarationSha256": "57680583f2daa8a8977f222406c81cba6958e28a818293ccbc5c00521f517c44",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "property:interface:vscode.WebviewPanel/$instance/webview": {
+      "strategy": "objectGetterProjection",
+      "declarationSha256": "4319656e4318230fec6bb83685d04a7d81b2e502f76c4d3df6818c21607845ef",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "typeAlias:vscode.DocumentSelector": {
+      "strategy": "stringSelectorProjection",
+      "declarationSha256": "3bfce14f6793e852262a6b007242c5e5794bea42b5f6f19c32cd7d78bf502b02",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "typeAlias:vscode.GlobPattern": {
+      "strategy": "reviewedExcluded",
+      "declarationSha256": "1b7871a420bea60ebd522af585bcdba56312b38fec203558aeb5b1edf66057c3",
+      "reason": "Only needed by the excluded DocumentFilter pattern branch."
+    },
+    "typeAlias:vscode.MarkedString": {
+      "strategy": "reviewedExcluded",
+      "declarationSha256": "9daebf1932c7d4e5948348dbe2fe0b63f9df479888c9a0ea99b7e4fc248965ff",
+      "reason": "The walking slice constructs Hover from MarkdownString."
+    },
+    "typeAlias:vscode.ProviderResult": {
+      "strategy": "providerResultProjection",
+      "declarationSha256": "f793aee42c28c4c0252b7f237ab9e03ded995c7c68484b953b43629a1fea7925",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "typeLiteral:property:interface:vscode.ExtensionContext/$instance/subscriptions/$shape@31f5ad1b22b80cac163fbf14d0444cee2ac230b6bc82f0c3ed62216bcbec740e": {
+      "strategy": "disposableStructuralType",
+      "declarationSha256": "b74b5965d707154ea2237875c75b492ae302667666936a220a9b1acb777d3da4",
+      "hostContract": "checkpoint4ExtensionHost"
+    },
+    "typeLiteral:function:vscode.window.createWebviewPanel@94de15f3ecd5ac614c2e7f2e9f6bbd86486c03518babb3d14a8888c0b428a6d1/$shape@daf931678b910da51d566ca28f15b10f0919f8b5e0c942ec47fe0c8c8a874ef3": {
+      "strategy": "reviewedExcluded",
+      "declarationSha256": "4f32396a177fb2697270f3aed214baa61276430fdca52f250625a902f0aae223",
+      "reason": "The first Flutter View selects the ViewColumn union branch."
+    },
+    "variable:vscode.workspace.onDidOpenTextDocument": {
+      "strategy": "eventValue",
+      "declarationSha256": "9b07438f64bb1bdc82e90d051cca8af4c7e91a81d0f79de00d16e84740e5976a",
+      "hostContract": "checkpoint4ExtensionHost"
+    }
+  }
+}

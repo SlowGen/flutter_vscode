@@ -1,0 +1,42 @@
+{
+  "name": "coverage-treemap",
+  "displayName": "Coverage Treemap",
+  "description": "Line coverage in your editor and a coverage treemap.",
+  "version": "0.0.1",
+  "publisher": "local",
+  "engines": {
+    "vscode": "1.129.1"
+  },
+  "main": "./out/bootstrap.cjs",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "coverage-treemap.showTreemap",
+        "title": "Coverage: Show Treemap"
+      },
+      {
+        "command": "coverage-treemap.refresh",
+        "title": "Coverage: Refresh"
+      },
+      {
+        "command": "coverage-treemap.toggleLineHighlights",
+        "title": "Coverage: Toggle Line Highlights"
+      },
+      {
+        "command": "coverage-treemap.runTests",
+        "title": "Coverage: Run Tests with Coverage"
+      },
+      {
+        "command": "coverage-treemap.smoke",
+        "title": "Coverage: Smoke Snapshot (diagnostics)"
+      },
+      {
+        "command": "coverage-treemap.viewSmoke",
+        "title": "Coverage: View Smoke (diagnostics)"
+      }
+    ]
+  }
+}

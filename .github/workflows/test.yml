@@ -6,14 +6,147 @@ on:
   pull_request:
 
 jobs:
-  test:
+  checks:
+    name: Analyze, format, and publishability
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: 3.44.6
           channel: stable
+          cache: true
 
-      - name: Run full test gate
-        run: ./scripts/test_all.sh
+      # One resolve at the workspace root covers every package in the
+      # repository; without it the nested packages analyze as unresolved.
+      - name: Resolve the workspace
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      # `git ls-files` would skip newly added files, so walk the tree instead.
+      - name: Check formatting
+        run: |
+          find packages extensions -name '*.dart' \
+            -not -path '*/generated/*' \
+            -not -name '*.g.dart' \
+            -not -path '*/.dart_tool/*' \
+            -not -path '*/build/*' \
+            -not -path '*/out/*' \
+            -print0 | xargs -0 dart format --output=none --set-exit-if-changed
+
+      - name: Verify dart_vscode publishes
+        run: dart pub publish --dry-run --ignore-warnings
+        working-directory: packages/dart_vscode
+
+      - name: Verify flutter_vscode publishes
+        run: dart pub publish --dry-run --ignore-warnings
+        working-directory: packages/flutter_vscode
+
+  test:
+    name: Every package's suite, standard runners
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.6
+          channel: stable
+          cache: true
+
+      - name: Resolve the workspace
+        run: flutter pub get
+
+      - name: dart_vscode suite
+        run: dart test
+        working-directory: packages/dart_vscode
+
+      - name: flutter_vscode suite
+        run: flutter test --exclude-tags gate
+        working-directory: packages/flutter_vscode
+
+      - name: pubspec_lens shared suite
+        run: dart test
+        working-directory: extensions/pubspec_lens/shared
+
+      - name: coverage_treemap shared suite
+        run: dart test
+        working-directory: extensions/coverage_treemap/shared
+
+      - name: treemap_panel suite
+        run: flutter test
+        working-directory: extensions/coverage_treemap/views/treemap_panel
+
+  gate:
+    name: Real-host gates against pinned VS Code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.6
+          channel: stable
+          cache: true
+
+      - name: Resolve the workspace
+        run: flutter pub get
+
+      - name: Deterministic binding importer checks
+        run: ./scripts/test_binding_importer.sh
+
+      - name: Pinned Extension Host gate
+        run: ./scripts/test_host_extension.sh
+
+      - name: Packaged extension end to end
+        run: ./scripts/test_packaged_extension.sh
+
+      - name: Coverage Treemap real-host gate
+        run: ./scripts/test_coverage_extension.sh
+
+      - name: Pubspec Lens real-host gate
+        run: ./scripts/test_pubspec_lens.sh
+
+      - name: Breakpoints bind to Dart source lines
+        run: ./scripts/test_breakpoints.sh
+
+      - name: Verify generated files and checkout are clean
+        run: |
+          git diff --exit-code
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git status --short
+            exit 1
+          fi
+
+  desktop:
+    name: Pinned host, natively on macOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.6
+          channel: stable
+          cache: true
+
+      # No Docker and no xvfb: macOS runners have neither, and the point of
+      # this job is the platform every author actually develops on. The
+      # Electron window runs headed on the runner's virtual display.
+      - name: Run the pinned Extension Host gate natively
+        run: ./scripts/test_host_extension_native.sh
+
+      - name: Coverage Treemap real-host gate natively
+        run: FLUTTER_VSCODE_GATE_NATIVE=1 ./scripts/test_coverage_extension.sh
+
+      - name: Pubspec Lens real-host gate natively
+        run: FLUTTER_VSCODE_GATE_NATIVE=1 ./scripts/test_pubspec_lens.sh
+
+      - name: Breakpoints bind natively
+        run: FLUTTER_VSCODE_GATE_NATIVE=1 ./scripts/test_breakpoints.sh
+
+      - name: Packaged extension end to end natively
+        run: FLUTTER_VSCODE_GATE_NATIVE=1 ./scripts/test_packaged_extension.sh

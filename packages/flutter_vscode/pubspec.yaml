@@ -1,0 +1,44 @@
+name: flutter_vscode
+description: >-
+  Build VS Code extensions with Dart-owned host behavior and optional Flutter
+  views.
+version: 0.1.0
+homepage: https://github.com/SlowGen/flutter_vscode
+repository: https://github.com/SlowGen/flutter_vscode
+issue_tracker: https://github.com/SlowGen/flutter_vscode/issues
+topics:
+  - vscode
+  - vscode-extension
+  - flutter-web
+  - cli
+resolution: workspace
+
+environment:
+  # The floors this repository actually tests: CI pins Flutter 3.44.6, and
+  # the scaffolded projects themselves require Dart ^3.12.0.
+  sdk: ^3.12.0
+  flutter: '>=3.44.0'
+
+dependencies:
+  analyzer: ^10.0.1
+  archive: ^4.0.9
+  crypto: ^3.0.7
+  dart_vscode: ^0.1.0
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  meta: ^1.9.1
+  path: ^1.8.3
+  web: ^1.1.0
+  xml: ^6.6.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  test: ^1.24.0
+  very_good_analysis: ^10.0.0
+  yaml: ^3.1.3
+
+executables:
+  flutter_vscode: flutter_vscode

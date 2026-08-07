@@ -7,13 +7,20 @@
 
 ## Design Principles
 
-- Keep code generation separate from runtime utilities.
-- Separate Dart generation from TypeScript generation.
-- Keep web bridge implementations platform specific (web and stub).
+- Keep the importer, binding generator, CLI orchestration, host interop, and
+  cross-runtime protocol in separate modules.
+- Keep Flutter View/browser adapters platform-specific and the protocol core
+  transport-independent.
+- Prefer deep typed interfaces over string-keyed maps and generic dispatchers. One carve-out: at JSON boundaries — the maintainer binding pipeline validating raw IR is the canonical case — string-keyed maps are the correct representation, and typed interfaces begin at the published API surface.
 
 ## Naming
 
-- Use `VSCode*` prefix for VS Code-specific classes.
+- Use `VSCode*` for framework-owned VS Code adapters. Generated Parity Layer
+  declarations preserve the upstream VS Code names (`Uri`, `Disposable`,
+  `Commands`, and so on) so API diffs remain mechanically recognizable.
+- Use `View*` for general cross-runtime protocol types. Role-specific session
+  types may put the role first (`HostViewSession`, `FlutterViewSession`) when
+  that reads more clearly at call sites.
 - Use `*Generator` for generator classes.
 - Use `*Element` naming for analyzer element types where applicable.
 

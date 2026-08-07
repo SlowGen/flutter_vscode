@@ -1,0 +1,19 @@
+name: flutter_vscode_host_fixture_view
+publish_to: none
+resolution: workspace
+description: Flutter View fixture for the flutter_vscode Extension Host test.
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_vscode:
+    path: ../../../../..
+  flutter_vscode_host_fixture_shared:
+    path: ../../shared
+  web: ^1.1.0
+
+dev_dependencies:
+  very_good_analysis: ^10.0.0

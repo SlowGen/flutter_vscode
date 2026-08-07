@@ -1,0 +1,17 @@
+{
+  "name": "flutter-vscode-extension-host-test",
+  "version": "0.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node run.cjs",
+    "test:lifecycle": "node --test bootstrap_lifecycle.test.cjs"
+  },
+  "devDependencies": {
+    "@jridgewell/trace-mapping": "0.3.31",
+    "@vscode/test-electron": "3.0.0",
+    "chrome-remote-interface": "0.34.0"
+  }
+}

@@ -1,0 +1,14 @@
+name: pubspec_lens_host
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  dart_vscode: ^0.1.0
+  pubspec_lens_shared:
+    path: ../shared
+
+dev_dependencies:
+  very_good_analysis: ^10.0.0

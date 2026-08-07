@@ -1,0 +1,9 @@
+{
+  "repo": ".",
+  "backup_root": ".agents/migration/20260720-084120-510691",
+  "created_gemini_symlink": false,
+  "merged_skills": [],
+  "deduped_skills": [],
+  "conflicts": [],
+  "warnings": []
+}

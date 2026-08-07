@@ -1,0 +1,354 @@
+{
+  "schemaVersion": 1,
+  "id": "checkpoint4ExtensionHost",
+  "boundary": "vscodeExtensionHost",
+  "sourceRepository": "https://github.com/SlowGen/flutter_vscode",
+  "apiTarget": {
+    "version": "1.129.1",
+    "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8"
+  },
+  "runtimeTarget": {
+    "vscodeVersion": "1.129.1",
+    "testElectronVersion": "3.0.0",
+    "nodeImage": "node:22-bookworm@sha256:5647be709086c696ff32edaaf1c70cd26d1da6ab2b39c32f3c7b4c4a31957e37",
+    "cachePolicy": "freshInvocationScoped"
+  },
+  "trustBoundary": {
+    "dartToolchain": "The locally installed Flutter/Dart SDK and packages resolved from the enforced lockfile are trusted; this contract does not attest their bytes.",
+    "vscodeRuntime": "Each gate resolves the exact official VS Code version into a new invocation-scoped cache; this contract does not attest a predeclared runtime binary digest."
+  },
+  "sources": {
+    "activationFailureTest": {
+      "path": "packages/flutter_vscode/test/fixtures/host_extension/test/activation_failure.cjs",
+      "sha256": "8902c1980a930eb6e59c2c571c3ee53d81d38078a73c4b5e53a8e5fb4e92e011"
+    },
+    "bindingCoverageLedger": {
+      "path": "packages/dart_vscode/tool/binding_generator/coverage_ledger.dart",
+      "sha256": "5c23296179e83e86226a98637727ab478f590a50bec8d7470b6d444b81b26cfe"
+    },
+    "bindingGenerator": {
+      "path": "packages/dart_vscode/tool/binding_generator/generator.dart",
+      "sha256": "a794da79c156a4f2150da1f22bd2861d790f734bf81a86f7281ad034fe5d6d12"
+    },
+    "bindingGeneratorCore": {
+      "path": "packages/dart_vscode/tool/binding_generator/generator/core.dart",
+      "sha256": "86958b7e2125c182b55203f319c5fa1c3e2cdab64044434776e912fc7bd5e1d5"
+    },
+    "bindingGeneratorOverrideReview": {
+      "path": "packages/dart_vscode/tool/binding_generator/generator/override_review.dart",
+      "sha256": "31b93fe45fd1a40882e9073289f48699faacd64165245e8528a82502145a1794"
+    },
+    "bindingGeneratorSliceValidation": {
+      "path": "packages/dart_vscode/tool/binding_generator/generator/slice_validation.dart",
+      "sha256": "9fb7cd15f22855cba4cf57105b0db07d332e11dc7c1cfbbff33627784f51c339"
+    },
+    "bindingGeneratorStrategyMatching": {
+      "path": "packages/dart_vscode/tool/binding_generator/generator/strategy_matching.dart",
+      "sha256": "86ac43604a0ea77b377468ffe5f80a8240b612c84ecdb91418859bed53820eb5"
+    },
+    "bindingGeneratorTypePredicates": {
+      "path": "packages/dart_vscode/tool/binding_generator/generator/type_predicates.dart",
+      "sha256": "f9519535b4c20c6d145fb7c75ee9eddc3bc2bea40e75673b4e09f67596a9a2b5"
+    },
+    "bindingIrTypeMapper": {
+      "path": "packages/dart_vscode/tool/binding_generator/ir_type_mapper.dart",
+      "sha256": "60c96487ec4c78111386e5f9ffa8f08de68e8f8a3dbcd5e2fae3829862002a40"
+    },
+    "bindingIrValidator": {
+      "path": "packages/dart_vscode/tool/binding_generator/ir_validator.dart",
+      "sha256": "6b0ff18059c33713ea15b2e9a54181e22ec22f76dbec5c85e626cecfaaf3bc48"
+    },
+    "bindingIrValidatorCanonical": {
+      "path": "packages/dart_vscode/tool/binding_generator/ir_validator/canonical.dart",
+      "sha256": "62a3814cd5b3f55818b4f270f022c4d04e6f2042bf471f727a763ae6550675ab"
+    },
+    "bindingIrValidatorModule": {
+      "path": "packages/dart_vscode/tool/binding_generator/ir_validator/module.dart",
+      "sha256": "174b57e670995f462b2d6c91ca57a07ec0964cd01b4c9e3e308fb1d54688cd18"
+    },
+    "bindingIrValidatorOrdering": {
+      "path": "packages/dart_vscode/tool/binding_generator/ir_validator/ordering.dart",
+      "sha256": "72fa4624b920dde121b41a63775902b53ea2fec3437b30c5e168186e035b6271"
+    },
+    "bindingIrValidatorShapes": {
+      "path": "packages/dart_vscode/tool/binding_generator/ir_validator/shapes.dart",
+      "sha256": "837b93f7fb9a4dd063efc617b6b1c9d677345bb94c3a21ac9785816a224ee080"
+    },
+    "bindingIrValidatorTypes": {
+      "path": "packages/dart_vscode/tool/binding_generator/ir_validator/types.dart",
+      "sha256": "02513281a167a100aa84c0ee86dbe691e562b2e30d32d55fdfc867030ab94b12"
+    },
+    "bindingIrValidatorValues": {
+      "path": "packages/dart_vscode/tool/binding_generator/ir_validator/values.dart",
+      "sha256": "f0d69d9f4441a6b6dd7f805968060ffeb77a4000f9d43f5663f970b3697712c0"
+    },
+    "bindingManifestProjection": {
+      "path": "packages/dart_vscode/tool/binding_generator/manifest_projection.dart",
+      "sha256": "b86414bf3f2ef40a4f8cc70240a3fcbd49ac9dd6afce8c5710deae0aad3b461f"
+    },
+    "bindingValidators": {
+      "path": "packages/dart_vscode/tool/binding_generator/validators.dart",
+      "sha256": "1ef1ff243291b5ec8e8742d81d06072fcbac2686bb9df5bbd6ba838396bca65b"
+    },
+    "bindingWriter": {
+      "path": "packages/flutter_vscode/lib/src/cli/artifact_writer.dart",
+      "sha256": "81cf47b0bb6f8e8a9e435935960fb63a82763ee23d6e002290eec33865b87f93"
+    },
+    "bootstrapLifecycleTest": {
+      "path": "packages/flutter_vscode/tool/extension_host_test/bootstrap_lifecycle.test.cjs",
+      "sha256": "0750b5061086edfec1cf63b2e41cef3b5c3dd6fca5febac2b07b03ed0b1ea686"
+    },
+    "buildReceipt": {
+      "path": "packages/flutter_vscode/lib/src/cli/build_receipt.dart",
+      "sha256": "6db080cb0fb28a9495dd308053abd7e031e71af532c59369197305ff887d947f"
+    },
+    "builder": {
+      "path": "scripts/build_host_fixture.sh",
+      "sha256": "2fd464aa159afb7932801ae3766b30fc64e5d6865626ad9aa4c94b9aa643d5ee"
+    },
+    "canonicalInventory": {
+      "path": "packages/dart_vscode/tool/bindings/ir/vscode-1.129.1.json",
+      "sha256": "159d92d18ac447bf572c0d7633f646dd79deb9271ccb09d2d8a5734ce83e4005"
+    },
+    "canonicalViewProtocol": {
+      "path": "packages/dart_vscode/lib/src/view_protocol.dart",
+      "sha256": "95c0baa511c107ea907705a741c6c9e4583634869d0f0e81da616b85bba16780"
+    },
+    "canonicalViewProtocolFrames": {
+      "path": "packages/dart_vscode/lib/src/view_protocol/frames.dart",
+      "sha256": "23383061c7d41fd6e8a0eb28e0a33601420b7342759657a9e98d3607faa0517b"
+    },
+    "canonicalViewProtocolHostSession": {
+      "path": "packages/dart_vscode/lib/src/view_protocol/host_session.dart",
+      "sha256": "1e6cc025072126a8ab2cab6f8ecdc2526a7cb3b67dd35c518d20c45889ff55c2"
+    },
+    "canonicalViewProtocolViewSession": {
+      "path": "packages/dart_vscode/lib/src/view_protocol/view_session.dart",
+      "sha256": "82ea8353e38e4b66f396c2fa4f0699410ab55c72659942c21c6245e4e9a2113b"
+    },
+    "cli": {
+      "path": "packages/flutter_vscode/bin/flutter_vscode.dart",
+      "sha256": "b974e0b142361dba59484be0c52301f3f47ab221757bd57a8d33b53468952da1"
+    },
+    "container": {
+      "path": "packages/flutter_vscode/tool/extension_host_test/Dockerfile",
+      "sha256": "7b619dd4268393d12fb93acabec6751f1749c49ff1d6f5b854a8aacd0a7b0ee3"
+    },
+    "contractWriter": {
+      "path": "packages/dart_vscode/tool/binding_generator/contract.dart",
+      "sha256": "d193c899c77eac6835239c1a9ee0707514cb854f0ba7289d50f6fc8696e4c171"
+    },
+    "contributionsException": {
+      "path": "packages/dart_vscode/lib/src/contributions/exception.dart",
+      "sha256": "09f5474fad15e185fdd954be6d3310e792ec51c8c8c3acf491602473934a00fe"
+    },
+    "contributionsJsonValues": {
+      "path": "packages/dart_vscode/lib/src/contributions/json_values.dart",
+      "sha256": "b9887b7a645e07985a17f3bfcb9da317d1c58891aa333822f0dad8394075d9f3"
+    },
+    "contributionsManifest": {
+      "path": "packages/dart_vscode/lib/src/contributions/manifest_projection.dart",
+      "sha256": "89096407205419cf5d55f2dba275e823b6b754e2cba45c0ab5d3a4141f1f52fd"
+    },
+    "contributionsProjections": {
+      "path": "packages/dart_vscode/lib/src/contributions/projections.dart",
+      "sha256": "3986a02f07dea8b04f3cada5c02f5b61b771089d20a3a70e8a096c350d7a94ec"
+    },
+    "ecmascriptWhitespace": {
+      "path": "packages/dart_vscode/lib/src/contributions/ecmascript_whitespace.dart",
+      "sha256": "a1379b94972edf960e862ab9051705243b7dfa1de5a45b664c3fa70ffa274792"
+    },
+    "evidenceIntegrityTest": {
+      "path": "packages/dart_vscode/test/binding_evidence_test.dart",
+      "sha256": "1b3c4c9546f9162f73698cb3fe7ec1c1e2bb467b6758888b87e7a414222f1480"
+    },
+    "fixtureHost": {
+      "path": "packages/flutter_vscode/test/fixtures/host_extension/host/lib/extension.dart",
+      "sha256": "26f01cb83c9417465f36995f724b923cf54707c2960ab7ef0d54115d4afebb9b"
+    },
+    "fixtureHostPackage": {
+      "path": "packages/flutter_vscode/test/fixtures/host_extension/host/pubspec.yaml",
+      "sha256": "666bb0a3978b166342d8d26a7ceb6c34b79cdfedf0bba318c43f9a7348deb8d7"
+    },
+    "fixtureManifest": {
+      "path": "packages/flutter_vscode/test/fixtures/host_extension/package.json",
+      "sha256": "5d1a64dcba46ec18e5d89c3af6c6f5c9d9e29801acfcd2610123e2028530091d"
+    },
+    "fixtureProject": {
+      "path": "packages/flutter_vscode/test/fixtures/host_extension/extension.json",
+      "sha256": "9b72a6f75816fbf493f4cbecbbe1a3c203ca9103d27c456584f68df71984fef1"
+    },
+    "fixtureSharedContract": {
+      "path": "packages/flutter_vscode/test/fixtures/host_extension/shared/lib/fixture_view_contract.dart",
+      "sha256": "dc526ae03ca8d1c2a59fd4f3a9572db4fcb8ca7af642f099d514bfba992e9701"
+    },
+    "fixtureSharedPackage": {
+      "path": "packages/flutter_vscode/test/fixtures/host_extension/shared/pubspec.yaml",
+      "sha256": "159c77ba2b6f8fce7bc7a93969a0ba04491f1448da7d4b72ecd31661bc73e87d"
+    },
+    "fixtureView": {
+      "path": "packages/flutter_vscode/test/fixtures/host_extension/views/main/lib/main.dart",
+      "sha256": "902b327498f41c82969a2bd57b7a2182fdf5c26370e15948e9bde4cd51b4de1b"
+    },
+    "fixtureViewIndex": {
+      "path": "packages/flutter_vscode/test/fixtures/host_extension/views/main/web/index.html",
+      "sha256": "3c4c06e17198c87f2a9cffead1b4705ab359c496e63e55c446fee426b6de7c7f"
+    },
+    "fixtureViewPackage": {
+      "path": "packages/flutter_vscode/test/fixtures/host_extension/views/main/pubspec.yaml",
+      "sha256": "39154195a0872a56a0f8d775c848f204fc9125f4eb1778d580e034a716345b46"
+    },
+    "flutterViewHostTemplate": {
+      "path": "packages/dart_vscode/lib/src/flutter_view_host.dart",
+      "sha256": "84a5a3a88f06577e7cbbbad09b46ef4e20bf39fca95c82ba19599d4fced5fefb"
+    },
+    "frameworkPackage": {
+      "path": "pubspec.yaml",
+      "sha256": "9765d0a175f67d77599996056e4274a4b5026e3bfb82f241e4d1d3f6beeeb218"
+    },
+    "frameworkPackageLock": {
+      "path": "pubspec.lock",
+      "sha256": "012a80ce3ed7632cffe192db7c125a152f2ff29b07d4e6464ce892304d3874be"
+    },
+    "generatedBootstrap": {
+      "path": "packages/flutter_vscode/test/fixtures/host_extension/host/bootstrap.cjs",
+      "sha256": "9e8fba7aa0daa0f625bf867d9d625be93884de5f2dd9bb2618f23c0f52a9a34f"
+    },
+    "generatedDartLayer": {
+      "path": "packages/dart_vscode/lib/src/generated/vscode_dart_layer.g.dart",
+      "sha256": "95135d28c9dc3a718709057aed0cd14c13ce995b0960d19a3c6123e811143a02"
+    },
+    "generatedHostExports": {
+      "path": "packages/flutter_vscode/test/fixtures/host_extension/host/lib/generated/host_exports.g.dart",
+      "sha256": "4fe0ecd013404ca2bd47817fb8560934594034db759294cc7122125c6aa26503"
+    },
+    "generatedRuntime": {
+      "path": "packages/flutter_vscode/test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart",
+      "sha256": "1ea6ebbbfc198b9ef3194c4a2e9e37efec81ab945ce5721fe6cdacfb5d3d0c91"
+    },
+    "harnessPackage": {
+      "path": "packages/flutter_vscode/tool/extension_host_test/package.json",
+      "sha256": "65a48420effe210d3151998bd52fb8b1c35ebe0b276d3133b47f9b7a4034cd9b"
+    },
+    "harnessPackageLock": {
+      "path": "packages/flutter_vscode/tool/extension_host_test/package-lock.json",
+      "sha256": "67542e37852ce2ff021693e31fcda45df43e6f8e05da0426174c5b10e7cbdf71"
+    },
+    "hostCommandsTemplate": {
+      "path": "packages/dart_vscode/lib/src/host_commands.dart",
+      "sha256": "dbe07100b9958941d68f3c0c60af8a589a25154ebf8cd96dd43128df3ffd76f3"
+    },
+    "hostContractSources": {
+      "path": "packages/dart_vscode/tool/bindings/host-contract-sources.json",
+      "sha256": "71d8538f2632cd0624ba725f27fca50810ec58a2517d7c1b1d3531517efa92df"
+    },
+    "hostImportChecker": {
+      "path": "packages/flutter_vscode/lib/src/cli/check_host_imports.dart",
+      "sha256": "69c0e96cf548e51dcb85e533f20caadce09bc79e1970f49008638b7cb7ee6808"
+    },
+    "hostRuntime": {
+      "path": "packages/dart_vscode/lib/src/host_runtime.dart",
+      "sha256": "43f21c510064ecdc8bc696b18be249e5cc8c2b8ed63c141c7a94e48ed12e5a64"
+    },
+    "launcher": {
+      "path": "packages/flutter_vscode/tool/extension_host_test/run.cjs",
+      "sha256": "209570d56753ee61617cb9e2dd1ecd4959bccf74d569b5b6604ac26fe753166e"
+    },
+    "projectArtifacts": {
+      "path": "packages/flutter_vscode/lib/src/cli/project_artifacts.dart",
+      "sha256": "47997d4c92d0795d23ff6b82a9c6738a9849d59e32c90d617120003bc156efbc"
+    },
+    "projectDescriptor": {
+      "path": "packages/flutter_vscode/lib/src/cli/project_descriptor.dart",
+      "sha256": "1b5e81118e21ab0c4bec14cddadd90834566a7041a2ff2a4fd05e6b9ac078c33"
+    },
+    "runner": {
+      "path": "scripts/test_host_extension.sh",
+      "sha256": "e1048d6f68b140c946cdcb4a61b073ab39bc82df6bb2211df3d93370e62636b0"
+    },
+    "test": {
+      "path": "packages/flutter_vscode/test/fixtures/host_extension/test/run.cjs",
+      "sha256": "bd3e792efc92677d9b7214f329b38a1999fd3b327377077224c2211eeb8d23a3"
+    },
+    "verifier": {
+      "path": "packages/flutter_vscode/tool/extension_host_test/host_contract.cjs",
+      "sha256": "ab3894cb9adfb6072609629c4cda0820eb4d20fdbfaef870a972ad05dd9188ca"
+    },
+    "verifierTest": {
+      "path": "packages/flutter_vscode/tool/extension_host_test/host_contract.test.cjs",
+      "sha256": "da40f5d4de76dd442391ceb26953a4fcdc42aef620d0a0f9f4bb6b105098e8a8"
+    },
+    "viewLibrary": {
+      "path": "packages/flutter_vscode/lib/view.dart",
+      "sha256": "c8d0cc705de337a484d98d28a9b00855b4d504b0ae841b04d5a132d38f6c925d"
+    },
+    "viewTransport": {
+      "path": "packages/flutter_vscode/lib/src/view_transport_web.dart",
+      "sha256": "cac2846a136ad316414a936774e2d85efbfbbd3098fc4defc3c3977654e61465"
+    },
+    "vscodeApiVersion": {
+      "path": "packages/dart_vscode/lib/src/contributions/vscode_api_version.dart",
+      "sha256": "8b19c77409084375b06b945e6dc227f8e570940d1f83cf4bf56d464acf79a808"
+    }
+  },
+  "evidence": {
+    "kind": "mechanicalAttribution",
+    "meaning": "Every listed binding ID is attributed to this one real Extension Host Contract by its reviewed Semantic Override; the gate passes only after the receipted repository sources and the surrounding native behavior pass, without per-member observation.",
+    "independentBehavioralContracts": false
+  },
+  "attributedBindings": [
+    "callSignature:vscode.Event.$call@ca2a1c0079bda6fe4025d2d6485a90eb0e007d05ec6764cf97cc592c7b6fde49",
+    "class:vscode.Disposable",
+    "class:vscode.Hover",
+    "class:vscode.MarkdownString",
+    "class:vscode.Position",
+    "class:vscode.Range",
+    "class:vscode.Uri",
+    "constructor:vscode.Hover.constructor@6178ff7eda91386cd069becefbe461cb05ebbfd88a5b0094b86df99b60c42d5b",
+    "constructor:vscode.MarkdownString.constructor@778db11e42722b5fdfd54cb5c08b7cbae6f446502675c24b6e1baafb768f8763",
+    "constructor:vscode.Range.constructor@feb11e87d50082b0a3dce50eb837c5fb2141e1972675614c832daac107a42aa2",
+    "enum:vscode.ViewColumn",
+    "enumMember:enum:vscode.ViewColumn/One",
+    "function:vscode.commands.executeCommand@b17465f671e67bfe53e6a6035f410a9da4014065660ba0353f0c1819e01e51c4",
+    "function:vscode.commands.registerCommand@34f73a03df1575981702703e8a718cb4adc33e54b09dd607cb695dbc0a6fe811",
+    "function:vscode.languages.registerHoverProvider@359bc682e80de72a8b404f4910825931a7d3218571ce6fbc7c24e51b6fdda82c",
+    "function:vscode.window.createWebviewPanel@94de15f3ecd5ac614c2e7f2e9f6bbd86486c03518babb3d14a8888c0b428a6d1",
+    "interface:global.Thenable",
+    "interface:vscode.CancellationToken",
+    "interface:vscode.Event",
+    "interface:vscode.ExtensionContext",
+    "interface:vscode.HoverProvider",
+    "interface:vscode.TextDocument",
+    "interface:vscode.Webview",
+    "interface:vscode.WebviewOptions",
+    "interface:vscode.WebviewPanel",
+    "method:property:interface:vscode.ExtensionContext/$instance/subscriptions.$shape@31f5ad1b22b80cac163fbf14d0444cee2ac230b6bc82f0c3ed62216bcbec740e.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650",
+    "method:vscode.Disposable.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650",
+    "method:vscode.HoverProvider.provideHover@a969cbd1bc9d722b55f274c6a1498f88b5a0f8111d844c87acb34af847215f47",
+    "method:vscode.Uri.joinPath@def462330bbbdd12dba18cecdb919bfb417658caeb2e1f58c491cbffb8630c60",
+    "method:vscode.Uri.toString@f34ea61ca7bffcee2909bb6d6e58a9ac5b97c70f77ba6a2e899890a9aadbfd06",
+    "method:vscode.Webview.asWebviewUri@d651d976be2224c53dd59a45880372a0ad40e686c697b38c14bcd4a900d02675",
+    "method:vscode.Webview.postMessage@a2972cc260d088838e09de8dc683393276ed8c03d172023d9a807a9d585d71a1",
+    "method:vscode.WebviewPanel.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650",
+    "namespace:vscode.commands",
+    "namespace:vscode.languages",
+    "namespace:vscode.window",
+    "namespace:vscode.workspace",
+    "property:class:vscode.Position/$instance/character",
+    "property:class:vscode.Position/$instance/line",
+    "property:interface:vscode.CancellationToken/$instance/isCancellationRequested",
+    "property:interface:vscode.ExtensionContext/$instance/extensionUri",
+    "property:interface:vscode.ExtensionContext/$instance/subscriptions",
+    "property:interface:vscode.Webview/$instance/cspSource",
+    "property:interface:vscode.Webview/$instance/html",
+    "property:interface:vscode.Webview/$instance/onDidReceiveMessage",
+    "property:interface:vscode.WebviewOptions/$instance/enableScripts",
+    "property:interface:vscode.WebviewOptions/$instance/localResourceRoots",
+    "property:interface:vscode.WebviewPanel/$instance/onDidDispose",
+    "property:interface:vscode.WebviewPanel/$instance/webview",
+    "typeAlias:vscode.DocumentSelector",
+    "typeAlias:vscode.ProviderResult",
+    "typeLiteral:property:interface:vscode.ExtensionContext/$instance/subscriptions/$shape@31f5ad1b22b80cac163fbf14d0444cee2ac230b6bc82f0c3ed62216bcbec740e",
+    "variable:vscode.workspace.onDidOpenTextDocument"
+  ]
+}

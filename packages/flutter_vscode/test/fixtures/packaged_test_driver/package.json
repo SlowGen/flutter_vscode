@@ -1,0 +1,10 @@
+{
+  "name": "packaged-test-driver",
+  "displayName": "flutter_vscode Packaged Extension Test Driver",
+  "description": "Development-only driver for installed VSIX host tests.",
+  "version": "0.0.0",
+  "publisher": "flutter-vscode-test",
+  "engines": {
+    "vscode": "1.129.1"
+  }
+}

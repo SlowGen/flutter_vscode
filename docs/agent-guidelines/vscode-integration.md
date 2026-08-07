@@ -1,22 +1,26 @@
 # VS Code Integration Rules
 
-## Webview Bridge
+## Host Dart
 
-- Implement the web bridge with `package:web` and `dart:js_interop`.
-- Keep a stub implementation for non-web platforms.
-- Use conditional exports for platform-specific bridge wiring.
+- Compile pure Dart to JavaScript and run it in-process in VS Code's Node
+  Extension Host.
+- Access `vscode` only through mechanically generated `dart:js_interop`
+  bindings from pinned official inputs and reviewed Semantic Overrides.
+- Preserve native host objects; do not serialize `Uri`, documents, positions,
+  providers, events, or disposables into DTOs.
+- Activation, providers, and commands must not depend on a Flutter View.
 
-## Message Handling
+## Flutter Views
 
-- Serialize Dart objects with JSON encoding.
-- Convert payloads for JavaScript using JS interop APIs.
-- Handle missing `acquireVsCodeApi()` gracefully.
-
-## TypeScript Generation
-
-- Generate handlers that match Dart method signatures.
-- Keep Dart/TypeScript interfaces aligned for type safety.
-- Generate command resolution code for VS Code APIs such as `vscode.window.*`.
+- Keep each view in a separate Flutter web runtime.
+- Use `package:web` and `dart:js_interop`; never add `dart:js_util`.
+- Keep `acquireVsCodeApi` private to the web adapter.
+- Use webview-safe resource URIs and a restrictive CSP with no broad default
+  source.
+- Send only schema-validated value snapshots over the versioned protocol.
+- Bind every frame to a session and active nonce, and allowlist operations.
+- Close/reload must fail pending work, cancel listeners, rotate session state,
+  and ignore late frames.
 
 ## Related
 

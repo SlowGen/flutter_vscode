@@ -1,0 +1,10 @@
+{
+  "name": "pubspec-lens-test-driver",
+  "displayName": "Pubspec Lens Extension Test Driver",
+  "description": "Development-only driver for the shipped pubspec-lens extension: opens the workspace, waits for analysis, and asserts the hover, diagnostic, CodeLens, and tree surfaces. The extension contributes its own view and configuration through the typed manifest.",
+  "version": "0.0.0",
+  "publisher": "flutter-vscode-test",
+  "engines": {
+    "vscode": "1.129.1"
+  }
+}

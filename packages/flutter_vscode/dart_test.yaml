@@ -1,0 +1,5 @@
+# `gate` marks tests that need Docker and a real VS Code download. They are
+# excluded from the fast loop and run with `flutter test --tags gate`.
+tags:
+  gate:
+    timeout: 2x

@@ -2,23 +2,23 @@
 
 ## Build Configuration
 
-- Configure build extensions in `build.yaml`.
-- Use `.g.part` for generated Dart part files.
-- Use `.handlers.ts` for generated TypeScript handlers.
+- Keep the canonical CLI exposed as `flutter_vscode` in `pubspec.yaml`.
+- Treat `package.json`, host bindings/bootstrap, bundles, source maps, launch
+  configuration, view build output, coverage, and VSIX files as managed.
 
 ## API Design
 
-- Keep annotation APIs focused:
-  - `@VSCodeController` marks controller classes.
-  - `@VSCodeCommand` marks command methods.
-- Prefer abstract base classes for generated implementations.
-- Provide factory helpers for generated instances where needed.
+- The Shipped API Baseline comes from the `flutter_vscode` release a
+  project depends on; projects never declare a target (ADR 0014).
+- Expose native host behavior through generated parity and idiomatic layers.
+- Expose a small typed view protocol rather than raw envelopes or arbitrary
+  host API dispatch.
 
 ## Documentation Standards
 
 - Document public APIs with `///`.
 - Keep `README.md` usage examples current.
-- Maintain working examples under `example/`.
+- Maintain working example extensions under `extensions/`.
 
 ## Related
 

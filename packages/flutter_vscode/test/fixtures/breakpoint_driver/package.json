@@ -1,0 +1,10 @@
+{
+  "name": "breakpoint-test-driver",
+  "displayName": "Breakpoint Binding Test Driver",
+  "description": "Development-only driver proving breakpoints bind to Dart source lines.",
+  "version": "0.0.0",
+  "publisher": "flutter-vscode-test",
+  "engines": {
+    "vscode": "1.129.1"
+  }
+}

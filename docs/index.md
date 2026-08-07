@@ -9,11 +9,10 @@ This folder contains project documentation organized by topic.
 - [Guides](guides/index.md)
 - [Reference](reference/index.md)
 - [Contributing](contributing/index.md)
+- [Architecture Decisions (ADRs)](adr/index.md)
 
 ## Root Documents
 
 - [Project README](../README.md)
-- [Product Requirements (PRD)](../PRD.md)
-- [Roadmap](reference/roadmap.md)
 - [Changelog](../CHANGELOG.md)
 - [AGENTS Index](../AGENTS.md)

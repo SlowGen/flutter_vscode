@@ -1,0 +1,10 @@
+{
+  "name": "coverage-treemap-test-driver",
+  "displayName": "Coverage Treemap Extension Test Driver",
+  "description": "Development-only driver for the shipped example extension.",
+  "version": "0.0.0",
+  "publisher": "flutter-vscode-test",
+  "engines": {
+    "vscode": "1.129.1"
+  }
+}

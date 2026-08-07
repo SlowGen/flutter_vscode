@@ -1,0 +1,26 @@
+{
+  "name": "host-extension-fixture",
+  "displayName": "flutter_vscode Host Extension Fixture",
+  "description": "Internal fixture for the Dart Extension Host walking skeleton.",
+  "version": "0.0.0",
+  "publisher": "flutter-vscode-test",
+  "engines": {
+    "vscode": "1.129.1"
+  },
+  "main": "./out/bootstrap.cjs",
+  "activationEvents": [
+    "onLanguage:json"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "flutter-vscode.host-test.ping",
+        "title": "Ping Dart Host"
+      },
+      {
+        "command": "flutter-vscode.host-test.openFlutterView",
+        "title": "Open Flutter View Fixture"
+      }
+    ]
+  }
+}

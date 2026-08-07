@@ -1,0 +1,14 @@
+name: coverage_treemap_host
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  coverage_treemap_shared:
+    path: ../shared
+  dart_vscode: ^0.1.0
+
+dev_dependencies:
+  very_good_analysis: ^10.0.0

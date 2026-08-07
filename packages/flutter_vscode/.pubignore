@@ -1,0 +1,23 @@
+/.dart_tool/
+/.github/
+/.vscode-test/
+/build/
+/out/
+**/.dart_tool/
+**/.vscode-test/
+**/build/
+**/node_modules/
+
+# Repository-only fixtures and maintainer tooling. The specs, gate scripts,
+# docs, and example extensions live above this package and are never part of
+# the archive; the generation pipeline lives in packages/dart_vscode, and
+# nothing under tool/ is an Extension Author asset.
+/test/
+/tool/
+
+# Instructions for repository agents are not Extension Author assets.
+/AGENTS.md
+/CLAUDE.md
+/CONTEXT.md
+/GEMINI.md
+

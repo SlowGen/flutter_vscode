@@ -1,96 +1,47 @@
 ---
 name: flutter-vscode-extension-host
 description: >-
-  Implement extension host logic in src/extension.ts for flutter_vscode
-  projects. Use for activation handlers, event listeners, tree views,
-  webview message routing, or APIs that cannot cross the webview bridge.
+  Implement activation, commands, providers, events, or lifecycle behavior in
+  Host Dart for a flutter_vscode Extension Project.
 ---
 
-# Extension Host Patterns (flutter_vscode)
+# Implement Host Dart Behavior
 
-Code in `src/extension.ts` runs in the **Node extension host** with full
-access to `vscode.*`. Flutter/Dart in the webview cannot register providers
-or subscribe to events directly.
+Put Extension Host logic in `host/lib/**`. It runs in VS Code even when no
+Flutter view exists.
 
-## When to Use extension.ts vs Annotations
+Use the one generated API layer,
+`package:dart_vscode/dart_vscode.dart`: mechanically generated
+`dart:js_interop` bindings covering every public declaration of the pinned
+VS Code API while preserving native VS Code objects. Wrap the activation
+arguments with `ExtensionContext(rawContext)` and `VscodeApi(rawVscode)`.
+Construct classes through module-rooted `new$` factories, interfaces and
+options objects through `lit$` literal factories, or call
+`VscodeApi(rawVscode).dart` for the Dart-first surface (`Future` returns,
+`Stream` event accessors, plain `String`/`num`/`bool` boundaries). Do not
+create a handwritten shadow binding, generic dispatcher, or inferred
+`dynamic` fallback.
 
-| Need | Where |
-|---|---|
-| Call VS Code API from Flutter button | `@VSCodeCommand` in `lib/vscode_api.dart` |
-| Listen to `onDidChangeActiveTextEditor` | `extension.ts` in `activate()` |
-| Register tree view / terminal / provider | `extension.ts` |
-| Route webview messages to VS Code | Already wired: `onDidReceiveMessage` → `handleCommand` |
+Pass command and provider callbacks through `toHostCallback` from
+`host/lib/generated/vscode_runtime.g.dart` so failures keep Dart source
+frames; return Dart futures to the host through `toHostPromise`; reach the
+network from Host Dart only through `hostFetch`. Keep `main()` as scaffolded:
+`registerHostExports(createJSInteropWrapper(...))` from
+`host_exports.g.dart`.
 
-## Default Webview Wiring
+Register VS Code-owned disposables in `ExtensionContext.subscriptions`
+synchronously during `activate`. Give Dart-owned resources idempotent
+cleanup and handle partial activation.
 
-Scaffolded `extension.ts` registers a webview view provider and routes
-Flutter → VS Code calls:
+Keep Flutter, DOM, `package:web`, `dart:io`, isolates, and unsupported
+platform libraries out of Host Dart. Put rich UI in `views/`; expose only
+explicit, allowlisted value operations over the versioned view protocol.
 
-```typescript
-webviewView.webview.onDidReceiveMessage(async (message) => {
-  await handleCommand(message, webviewView.webview);
-});
+After editing:
+
+```sh
+flutter_vscode build
 ```
 
-`handleCommand` is imported from generated `lib/vscode_api.handlers.ts`.
-Do not replace this with hand-written per-command switches.
-
-## Post Message to Flutter (Host → Webview)
-
-```typescript
-webviewView.webview.postMessage({ type: 'editorChanged', uri: doc.uri.toString() });
-```
-
-Handle in Dart by extending message listening (custom code beyond generated
-request/response pairs).
-
-## Event Listener Example
-
-```typescript
-export function activate(context: vscode.ExtensionContext) {
-  context.subscriptions.push(
-    vscode.window.onDidChangeActiveTextEditor((editor) => {
-      if (editor && provider.view) {
-        provider.view.webview.postMessage({
-          type: 'activeEditor',
-          uri: editor.document.uri.toString(),
-        });
-      }
-    }),
-  );
-}
-```
-
-## Register Custom Host Command
-
-```typescript
-context.subscriptions.push(
-  vscode.commands.registerCommand('myExtension.doHostWork', async () => {
-    const result = await vscode.window.showInputBox({ prompt: 'Host-side input' });
-    // ...
-  }),
-);
-```
-
-Expose to Flutter via `@VSCodeCommand('commands.executeCommand')`:
-
-```dart
-@VSCodeCommand('commands.executeCommand')
-Future<dynamic> runCommand(String command, List<dynamic> args);
-```
-
-```dart
-await api.runCommand('myExtension.doHostWork', []);
-```
-
-## Tree Views / Terminals
-
-Not supported via annotations. Implement provider in `extension.ts` per VS
-Code docs; optionally notify webview via `postMessage`.
-
-## Checklist
-
-- [ ] Add `context.subscriptions.push(...)` for disposables
-- [ ] Match `package.json` command ids
-- [ ] `npm run compile` after edits
-- [ ] Reload extension host after `package.json` changes
+Verify commands/providers before any view opens and again after every view
+has closed.

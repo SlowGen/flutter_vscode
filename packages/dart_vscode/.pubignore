@@ -1,0 +1,18 @@
+/.dart_tool/
+/build/
+**/.dart_tool/
+**/build/
+**/node_modules/
+
+# The maintainer tool/ area (binding importer, generator, IR, overrides,
+# contracts) and the package tests are repository-only: Extension Authors
+# receive
+# the generated API layer and runtime libraries, never the pipeline.
+/tool/
+/test/
+
+# Instructions for repository agents are not Extension Author assets.
+/AGENTS.md
+/CLAUDE.md
+/CONTEXT.md
+/GEMINI.md

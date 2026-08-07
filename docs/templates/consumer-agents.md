@@ -1,107 +1,76 @@
 # Extension Agent Guidelines
 
-This project is a **flutter_vscode** VS Code extension: Flutter web UI in a
-webview, Dart controllers for VS Code API calls, TypeScript extension host.
+This is a `flutter_vscode` Extension Project: activation and VS Code
+callbacks run in pure Host Dart, and Flutter views are optional, separate
+runtimes. This file is the working agreement for any agent editing the
+project — which files are author-owned, which rules are non-negotiable,
+and how to validate a change. Focused workflows live in the project-local
+skills under [`agent-skills/`](agent-skills/).
 
-These rules apply to AI agents and contributors working in **this extension
-project** (not the flutter_vscode package itself).
+## Source of truth
 
-## Skills
+- Edit `extension.dart` for metadata and contributions (commands, views,
+  view containers, configuration).
+- Edit `host/lib/**` for commands, providers, events, and VS Code object use.
+- Edit `shared/lib/**` only for runtime-neutral Dart.
+- Edit `views/**` for optional Flutter UI.
+- Never edit `package.json`, `host/lib/generated/**`,
+  `host/bootstrap.cjs`, `.vscode/launch.json`, `out/**`, or a VSIX.
 
-Project skills live in `agent-skills/` (portable markdown). Use them for common tasks:
+## Mandatory rules
 
-| Skill | When to use |
-|---|---|
-| `flutter-vscode-add-command` | Call a VS Code API from Flutter/Dart |
-| `flutter-vscode-contributions` | Edit `package.json` views, commands, menus |
-| `flutter-vscode-extension-host` | Code that belongs in `src/extension.ts` |
-| `flutter-vscode-build` | build_runner, tsc, flutter build web |
-| `flutter-vscode-test` | VM tests for controllers without a webview |
-| `flutter-vscode-troubleshoot` | Webview blank, CSP, timeouts, missing handlers |
+1. Run host behavior without assuming a Flutter view exists.
+2. Use only the one generated API layer,
+   `package:dart_vscode/dart_vscode.dart`; it maps every public
+   declaration of the pinned VS Code API. Never handwrite a replacement
+   binding; report a missing or wrong mapping as a framework defect.
+3. The VS Code baseline comes from the `flutter_vscode` release you depend
+   on; move it only by upgrading that dependency deliberately.
+4. Put Flutter/browser imports only in `views/`; keep `host/` and `shared/`
+   within their enforced dependency boundaries.
+5. Send only validated value snapshots across the versioned view protocol.
+   Keep native VS Code objects in Host Dart.
+6. Expose view operations through a specific allowlist; do not add a generic
+   dispatcher.
+7. Register disposables with the extension context or clean up Dart-owned
+   resources idempotently.
+8. Preflight with `flutter_vscode doctor`; regenerate with
+   `flutter_vscode build` (or a running `flutter_vscode build --watch`);
+   run author suites with `flutter_vscode test`; package with
+   `flutter_vscode package`.
 
-If your agent tool uses a different skills location, copy or symlink from
-`agent-skills/` (for example `.cursor/skills/` or a product-specific rules path).
+## Decision guide
 
-## Decision Tree
-
-```
-User wants VS Code behavior
-│
-├─ Triggered from Flutter UI (button, form)?
-│  └─ Add method to lib/vscode_api.dart with @VSCodeCommand('namespace.method')
-│     Run: dart run build_runner build --delete-conflicting-outputs
-│     NEVER edit lib/*.handlers.ts by hand
-│
-├─ Register at extension startup (provider, event listener)?
-│  └─ Edit src/extension.ts inside activate()
-│
-├─ New sidebar / command palette / menu item?
-│  └─ Edit package.json contributes section
-│
-└─ Tree view / terminal / debug / language features?
-   └─ Host-only — implement in src/extension.ts (not annotations)
-```
-
-## Mandatory Rules
-
-1. **Dotted command ids** — `@VSCodeCommand('window.showInputBox')` always.
-2. **Abstract controller** — `@VSCodeController()` on abstract class; abstract methods only.
-3. **Positional params only** — map TS options objects to `Map<String, dynamic>` as a single arg.
-4. **Regenerate after controller changes** — `dart run build_runner build --delete-conflicting-outputs`
-5. **Never edit generated files** — `*.vscode.g.part`, `*.handlers.ts`
-6. **Initialize bridge** — `VSCodeWebViewHelper.initialize()` in `main()` before `runApp`
-7. **Full compile** — `npm run compile` before F5 (build_runner + tsc + flutter build web)
-
-## File Ownership
-
-| Edit freely | Regenerate only | Scaffold (edit carefully) |
-|---|---|---|
-| `lib/*.dart` (except `*.g.part`) | `*.vscode.g.part` | `src/extension.ts` |
-| Flutter UI under `lib/` | `*.handlers.ts` | `package.json` |
-| `test/` | | `web/` |
-
-## Common API Patterns
-
-Use `VSCode.instance.invoke` for quick experiments, or annotations for stable APIs:
-
-```dart
-// Dynamic invoke (no build_runner)
-await VSCode.instance.invoke<void>(
-  'window.showInformationMessage',
-  ['Hello'],
-  expectsResponse: false,
-);
-
-// Annotated controller
-@VSCodeCommand('window.showInformationMessage')
-Future<void> info(String message);
+```text
+VS Code activation, command, provider, event, or native object -> host/lib/
+Extension contribution                                      -> extension.dart
+Runtime-neutral model                                       -> shared/lib/
+Rich optional UI                                            -> views/<name>/
+Host value needed by a view                        -> allowlisted operation
+Missing generated VS Code symbol                            -> report API gap
 ```
 
-## Build Pipeline
+## Validation
 
-```bash
-dart run build_runner build --delete-conflicting-outputs
-npm run compile
+```sh
+flutter_vscode doctor
+flutter_vscode build
+flutter_vscode test
+flutter_vscode package
 ```
 
-Then F5 in VS Code (Extension Development Host).
+`doctor` verifies the Dart and Flutter SDKs, the project layout, and that
+the installed framework carries its pinned VS Code baseline before deeper
+work. `test` runs every author suite the
+project has: `shared/test` and `host/test` with `dart test`, and each
+`views/<name>/test` with `flutter test`.
 
-## Testing Without Webview
+After a view change, also verify that host commands and providers work both
+without opening it and after closing it, and that protocol pending-request and
+subscription counts return to zero.
 
-```dart
-VSCodeControllerBase.debugRequestIdFactory = () => 'test-req-1';
-final future = api.inputBox({'prompt': 'Name?'});
-VSCodeControllerBase.handleMessage({
-  'requestId': 'test-req-1',
-  'result': 'Ada',
-});
-expect(await future, 'Ada');
-```
-
-## When Stuck
-
-1. Confirm build_runner ran after controller edits.
-2. Confirm `npm run compile` completed (`build/web/`, `out/extension.js`).
-3. Check command id uses correct namespace (`window.`, `workspace.`, `commands.`).
-4. Read generated `lib/vscode_api.handlers.ts` — do not edit; verify case exists.
-5. Use `flutter-vscode-troubleshoot` skill.
+Use the project-local skills under `agent-skills/` for focused workflows —
+[`flutter-vscode-view`](agent-skills/flutter-vscode-view/SKILL.md) for
+Flutter View authoring and
+[`flutter-vscode-troubleshoot`](agent-skills/flutter-vscode-troubleshoot/SKILL.md)
+when a command fails.

@@ -1,0 +1,26 @@
+name: treemap_panel
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  coverage_treemap_shared:
+    path: ../../shared
+  fl_chart: ^1.2.0
+  flutter:
+    sdk: flutter
+  flutter_vscode:
+    path: ../../../../packages/flutter_vscode
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^10.0.0
+
+flutter:
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: fonts/Roboto-Variable.ttf

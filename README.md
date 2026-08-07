@@ -1,150 +1,55 @@
 # flutter_vscode
 
-Build VS Code extensions with Flutter web UI and Dart-first controller logic.
-`flutter_vscode` provides annotations, code generation, runtime bridge APIs,
-and a scaffold command so you can avoid hand-written webview wiring.
+Build VS Code extensions in Dart and Flutter. This repository is a pub workspace: one `dart pub get` at the root resolves every package, and `flutter analyze` covers the whole tree.
 
-## What this package provides
+## Layout
 
-- Annotation-driven Dart and TypeScript generation with `@VSCodeController` and `@VSCodeCommand`.
-- Runtime request/response messaging between Flutter webview code and VS Code extension host.
-- Scaffold CLI: `dart run flutter_vscode:generate_vscode_extension`.
-- Webview-safe default build assets and compile script.
-- **Agent toolkit:** curated skills and `AGENTS.md` template so AI agents handle VS Code API translation (see [Agent-Assisted Development](docs/guides/agent-assisted-development.md)).
-- **Dynamic invoke:** `VSCode.instance.invoke('window.showInputBox', [...])` for VS Code API calls without `build_runner` (see [Message Contract](docs/reference/message-contract.md)).
+| path | what it is |
+|---|---|
+| [`packages/dart_vscode`](packages/dart_vscode) | published, pure Dart: the generated VS Code API, the view protocol, and the Host Dart runtime |
+| [`packages/flutter_vscode`](packages/flutter_vscode) | published: the CLI and the Flutter View runtime, built on `dart_vscode` |
+| [`extensions/`](extensions/README.md) | the shipped example extensions — Coverage Treemap (Flutter View) and Pubspec Lens (Host-Only, native VS Code UI) — built only through the public CLI |
+| [`docs/`](docs/index.md) | guides, reference, architecture, and ADRs |
+| [`specs/`](specs/vision/vision.md) | vision, architecture notes, and plan history |
+| [`skills/`](skills/README.md) | agent skills for extension authors — copied into an extension project as `agent-skills/` |
+| `scripts/` | the per-gate real-host scripts the CI workflow runs as steps, plus `ci_gates.sh` to run the whole workflow locally |
 
-## Prerequisites
+## Build an extension
 
-- Flutter SDK (includes Dart)
-- Node.js + npm
-- VS Code
+The full walkthrough is the [package README](packages/flutter_vscode/README.md); the [quickstart](docs/guides/quickstart.md) is the guided version. The short form:
 
-## Quickstart
+```sh
+dart pub global activate --source path \
+  /path/to/flutter_vscode/packages/flutter_vscode
 
-1. Add dependency and generator tools:
-
-```yaml
-dependencies:
-  flutter_vscode: ^0.1.0
-
-dev_dependencies:
-  build_runner: ^2.10.4
+flutter_vscode create my_extension
+cd my_extension
+flutter_vscode build
 ```
 
-2. Generate extension scaffold:
+Open the project in VS Code and press F5 to run it in an Extension Development Host. From there, by topic:
 
-```bash
-dart run flutter_vscode:generate_vscode_extension
+- [a Dart-only extension](packages/flutter_vscode/README.md#your-first-extension-dart-only) — the typed manifest, commands, providers, and the `doctor`/`build`/`test`/`package` loop
+- [the VS Code API from Dart](packages/flutter_vscode/README.md#reaching-the-rest-of-the-vs-code-api) — every namespace, class, enum, and callback of the pinned baseline, typed; reference in the [Generated Host API](docs/reference/generated-host-api.md)
+- [adding a Flutter View](packages/flutter_vscode/README.md#adding-a-flutter-view) — a Flutter web app in a webview panel, and [showing it from Host Dart](packages/flutter_vscode/README.md#showing-the-view-from-host-dart)
+- [pub.dev packages](packages/flutter_vscode/README.md#using-pubdev-packages) — web-compatible Dart packages in `host/` and `shared/`, Flutter UI packages in views
+- [debugging both sides](packages/flutter_vscode/README.md#debugging-the-flutter-view) — F5, terminal-launched development hosts, webview developer tools
+
+## Working in this repository
+
+You need a Flutter SDK carrying Dart `^3.12.0` (the floor every workspace package pins).
+
+```sh
+dart pub get                # resolves every workspace package
+flutter analyze             # covers the whole tree
+cd packages/dart_vscode && dart test              # the API package suite
+cd packages/flutter_vscode && flutter test --exclude-tags gate  # fast suite
+./scripts/ci_gates.sh       # the whole CI workflow locally: containers
+                            # plus, on macOS, the five native desktop gates
 ```
 
-3. Install dependencies:
+CI ([`.github/workflows/test.yml`](.github/workflows/test.yml)) runs four jobs: analyze/format/publishability checks, every package's suite, the real-host gates against a pinned VS Code in containers, and a macOS desktop job that reruns five of those gates natively — four take `FLUTTER_VSCODE_GATE_NATIVE=1`, and the host gate runs through its dedicated native script. `ci_gates.sh` runs exactly those jobs locally — the ubuntu jobs in runner-like Docker containers (so it needs Docker), the macOS job natively when the host is a Mac.
 
-```bash
-flutter pub get
-npm install
-```
+(Plain `flutter test` in `packages/flutter_vscode` also runs the gate-tagged workflow test — the full Docker CI run — which is rarely what you want mid-loop.)
 
-4. Define controller API in Dart:
-
-```dart
-import 'package:flutter_vscode/runtime.dart';
-
-part 'vscode_api.vscode.g.part';
-
-@VSCodeController()
-abstract class VSCodeApi {
-  @VSCodeCommand('window.showInformationMessage')
-  Future<void> info(String message);
-
-  @VSCodeCommand('window.showInputBox')
-  Future<String?> inputBox(String prompt);
-}
-
-VSCodeApi createVSCodeApi() => _$VSCodeApi();
-```
-
-5. Initialize runtime bridge in your Flutter app:
-
-```dart
-void main() {
-  VSCodeWebViewHelper.initialize();
-  runApp(const MyApp());
-}
-```
-
-6. Build generated code + extension:
-
-```bash
-dart run build_runner build --delete-conflicting-outputs
-npm run compile
-```
-
-7. Open the extension project in VS Code and press F5.
-
-## Agent-assisted development
-
-The scaffold command copies a **portable agent toolkit** into your extension project:
-
-- `AGENTS.md` — project rules for AI coding agents (supported by many tools)
-- `agent-skills/` — workflow guides as plain markdown (`SKILL.md` files)
-
-These work with any agent product that reads `AGENTS.md` or custom instructions
-(Cursor, Claude Code, GitHub Copilot, Windsurf, Cline, etc.). Wire skills into
-your tool if needed — for example, symlink or copy `agent-skills/*` into your
-product's skills directory, or `@`-reference the skill files in prompts.
-
-Describe VS Code behavior in plain language; your agent adds annotations, uses
-`VSCode.instance.invoke`, or runs the build pipeline. See
-[Agent-Assisted Development](docs/guides/agent-assisted-development.md) and
-[VS Code API Mapping](docs/reference/vscode-api-mapping.md).
-
-## Build pipeline
-
-The default compile flow is:
-
-1. `dart run build_runner build --delete-conflicting-outputs`
-2. `tsc -p ./`
-3. `flutter build web --no-web-resources-cdn --csp --pwa-strategy none --no-tree-shake-icons`
-
-## Generated file ownership
-
-- Safe to regenerate:
-  - `*.vscode.g.part`
-  - `*.handlers.ts`
-- Created once by scaffold (not overwritten by default on rerun):
-  - `AGENTS.md`
-  - `agent-skills/`
-  - `src/vscode_invoke.ts`
-  - `src/extension.ts`
-  - `package.json`
-  - `tsconfig.json`
-  - `web/index.html`, `web/flutter_bootstrap.js`, `web/manifest.json`
-  - `lib/vscode_api.dart`
-- Merge behavior:
-  - `.gitignore` entries are appended when missing.
-
-## Example project
-
-The `example/` directory is the integration fixture. Run its tests with:
-
-```bash
-cd example && flutter test
-```
-
-They are also included in `./scripts/test_all.sh`.
-
-## Troubleshooting
-
-- If commands are missing, rerun `dart run build_runner build`.
-- If VS Code host fails to load webview, ensure `npm run compile` has completed.
-- If extension cannot call VS Code APIs, verify command ids and generated handlers.
-- For runtime payload details, see `docs/reference/message-contract.md`.
-
-## Documentation
-
-- [Documentation Index](docs/index.md)
-- [Roadmap](docs/reference/roadmap.md)
-- [Architecture](docs/architecture/index.md)
-- [Guides](docs/guides/index.md)
-- [Reference](docs/reference/index.md)
-- [PRD](PRD.md)
+Each example package owns its own tests; run them in their directory.

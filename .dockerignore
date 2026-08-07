@@ -1,0 +1,10 @@
+# The gate Dockerfiles COPY only the two npm manifests; everything else
+# reaches containers through runtime bind mounts. Keeping build caches and
+# VCS state out of the context turns a ~700 MB send into a few MB, six
+# times per gate run.
+.git
+.vscode-test
+**/.dart_tool
+**/build
+**/out
+**/node_modules

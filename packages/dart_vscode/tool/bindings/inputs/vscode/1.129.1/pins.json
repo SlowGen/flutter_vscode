@@ -1,0 +1,112 @@
+{
+ "schemaVersion": 1,
+ "product": {
+  "name": "Visual Studio Code",
+  "version": "1.129.1",
+  "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8"
+ },
+ "parser": {
+  "name": "typescript",
+  "version": "6.0.0-dev.20260416"
+ },
+ "manifestSchema": {
+  "schemaUri": "vscode://schemas/vscode-extensions",
+  "standalone": false,
+  "composition": "Extension-point modules populate contributes.properties at runtime"
+ },
+ "inputs": [
+  {
+   "name": "VS Code API declarations",
+   "kind": "apiDeclarations",
+   "path": "vscode.d.ts",
+   "version": "1.129.1",
+   "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8",
+   "source": "https://raw.githubusercontent.com/microsoft/vscode/8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/src/vscode-dts/vscode.d.ts",
+   "sha256": "ee11e767c8ab76f6c0de8dc88222796147a6f0bc82f3a1ec644e41b39b52f2cd",
+   "license": "MIT",
+   "licensePath": "LICENSE.txt"
+  },
+  {
+   "name": "VS Code extension manifest schema source",
+   "kind": "extensionManifestSchemaSource",
+   "path": "extension-manifest-schema.ts",
+   "version": "1.129.1",
+   "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8",
+   "source": "https://raw.githubusercontent.com/microsoft/vscode/8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/src/vs/workbench/services/extensions/common/extensionsRegistry.ts",
+   "sha256": "feddc98984b755a95644674910aa8c671e3259f137698c581ec7e2837cb058aa",
+   "license": "MIT",
+   "licensePath": "LICENSE.txt"
+  },
+  {
+   "name": "VS Code extension manifest validator source",
+   "kind": "extensionManifestValidatorSource",
+   "path": "extension-validator.ts",
+   "version": "1.129.1",
+   "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8",
+   "source": "https://raw.githubusercontent.com/microsoft/vscode/8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/src/vs/platform/extensions/common/extensionValidator.ts",
+   "sha256": "e8ae92aa491ab138b6f625acbbcbd7c53ff187098066ff13aebb64615202dde1",
+   "license": "MIT",
+   "licensePath": "LICENSE.txt"
+  },
+  {
+   "name": "VS Code commands contribution schema source",
+   "kind": "contributionSchemaSource",
+   "path": "menusExtensionPoint.ts",
+   "version": "1.129.1",
+   "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8",
+   "source": "https://raw.githubusercontent.com/microsoft/vscode/8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/src/vs/workbench/services/actions/common/menusExtensionPoint.ts",
+   "sha256": "a85c943ae42b2cdef0403070f78cfb9dbe7bcdc1fce7c57bf9ca2234d1e36a33",
+   "license": "MIT",
+   "licensePath": "LICENSE.txt"
+  },
+  {
+   "name": "VS Code string validation helper source",
+   "kind": "contributionValidationHelperSource",
+   "path": "strings.ts",
+   "version": "1.129.1",
+   "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8",
+   "source": "https://raw.githubusercontent.com/microsoft/vscode/8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/src/vs/base/common/strings.ts",
+   "sha256": "c65ae37d623cf8a1dd0a5083cbb3f09f3433342accdc220c6bb8076aa12a1eec",
+   "license": "MIT",
+   "licensePath": "LICENSE.txt"
+  },
+  {
+   "name": "VS Code license",
+   "kind": "license",
+   "path": "LICENSE.txt",
+   "version": "1.129.1",
+   "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8",
+   "source": "https://raw.githubusercontent.com/microsoft/vscode/8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/LICENSE.txt",
+   "sha256": "9480271317925265e806a9a196aaa33410a962fa9d4d1e248a4a5187bc8c9df9",
+   "license": "MIT"
+  },
+  {
+   "name": "Views extension point source",
+   "kind": "viewsContributionSchemaSource",
+   "path": "viewsExtensionPoint.ts",
+   "version": "1.129.1",
+   "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8",
+   "source": "https://raw.githubusercontent.com/microsoft/vscode/8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/src/vs/workbench/api/browser/viewsExtensionPoint.ts",
+   "sha256": "17006750e3af4359fa5a518bf8dcb14beb060e98bc401245302a46030172a102",
+   "license": "MIT",
+   "licensePath": "LICENSE.txt"
+  },
+  {
+   "name": "Configuration extension point source",
+   "kind": "configurationContributionSchemaSource",
+   "path": "configurationExtensionPoint.ts",
+   "version": "1.129.1",
+   "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8",
+   "source": "https://raw.githubusercontent.com/microsoft/vscode/8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/src/vs/workbench/api/common/configurationExtensionPoint.ts",
+   "sha256": "e9faa24f3835b807762aa069a8029c3b004b76a3e7f42ceddee598b71b26cb0a",
+   "license": "MIT",
+   "licensePath": "LICENSE.txt"
+  }
+ ],
+ "contributionSchemas": [
+  "commands",
+  "configuration",
+  "views",
+  "viewsContainers"
+ ]
+}
